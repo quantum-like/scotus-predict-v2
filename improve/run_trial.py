@@ -91,7 +91,7 @@ for t in range(int(term.min()) + 10, int(term.max()) + 1):
         iso = IsotonicRegression(out_of_bounds="clip", y_min=0.001, y_max=0.999).fit(pr(X[cal]), ycons[cal])
         p[te] = iso.predict(pr(X[te]))
     if t >= PFROM: log(f"term {t} train={tr.sum()} emb_dropped={(~emb).sum()} test={te.sum()}")
-R = raw.loc[term >= PFROM, ["docketId", "term", "justice", "direction", "decisionDirection"]].copy(); R["p_cons"] = p[term >= PFROM]
+R = raw.loc[term >= PFROM, ["docketId", "term", "justice", "direction", "decisionDirection", "lcDispositionDirection", "case_outcome_disposition"]].copy(); R["p_cons"] = p[term >= PFROM]
 R.loc[R.term <= 2014].to_csv(os.path.join(OUT, "explore_1990_2014.csv.gz"), index=False)
 R.loc[(R.term >= 2015) & (R.term <= 2025)].to_csv(os.path.join(OUT, "sealed_holdout.csv.gz"), index=False)
 E = R[(R.term <= 2014)]; v = E[E.direction.isin([1, 2])]
