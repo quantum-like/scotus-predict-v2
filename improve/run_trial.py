@@ -66,7 +66,8 @@ if "F4" in FS:   # circuit, its prior reversal rate, circuit split (certReason c
     F["circuit_split"] = raw.certReason.isin([2, 3, 4, 5, 6]).astype(float).values
 log(f"features {F.shape}")
 dd = pandas.to_datetime(raw.dateDecision, errors="coerce")
-X = F.values; del F; gc.collect()
+X = F.values; del F
+if MODEL == 'lr': X = numpy.nan_to_num(X, nan=0.0)  # LR cannot take NaN (bug fix found in smoke test, not a spec change); gc.collect()
 numpy.random.seed(0); PFROM = 1990; mdl = None; tc = 0; p = numpy.full(len(raw), numpy.nan)
 for t in range(int(term.min()) + 10, int(term.max()) + 1):
     tc += 1; te = term == t
