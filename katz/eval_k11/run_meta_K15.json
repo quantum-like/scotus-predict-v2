@@ -1,0 +1,23 @@
+{
+ "trial": "K15",
+ "model": "hier",
+ "class_weight": null,
+ "features": [
+  "free",
+  "pendfix"
+ ],
+ "fixes": "T0",
+ "seed": 0,
+ "dtype": "float32",
+ "cfg_hash": "6768a4dc8395",
+ "n_features": 1180,
+ "devices": {
+  "model": "mps"
+ },
+ "lightgbm_gpu": false,
+ "missaug": null,
+ "runtime_s": 202.5,
+ "python": "3.14.6",
+ "sklearn": "1.9.1",
+ "pandas": "3.0.6"
+}

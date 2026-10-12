@@ -1,0 +1,1 @@
+{"features": ["naturalCourt", "chief", "jurisdiction", "adminAction", "threeJudgeFdc", "caseSource", "lcDispositionDirection", "issue", "lawType"], "runtime_s": 132, "device": "cpu", "n_jobs": -1}

@@ -22,7 +22,7 @@ def mk(trial):
 C10 = mk("K10"); C11 = mk("K11"); C15 = mk("K15")
 C12 = C10.copy(); C12["P"] = cal(C10, ["pm"], "iso")
 ms = pd.read_csv("results/masse_live/preds.csv").set_index("docketId")
-C13 = C10.copy(); C13["mp"] = C13.index.map(ms.p_pet); C13["kp"] = C10.P
+C13 = C10.copy(); C13["mp"] = C13.index.map(ms.p_pet); C13["kp"] = C10.pm   # bug fix: calibrated P is NaN before 1990; stack on K10 raw P(majority)
 has = C13.mp.notna(); C13.loc[~has, "mp"] = C13.loc[~has, "kp"]
 C13["P"] = cal(C13.assign(kp=C13.kp.clip(.01, .99), mp=C13.mp.clip(.01, .99)), ["kp", "mp"]); C13.loc[C13.term < 1990, "P"] = np.nan
 POP = {"K10": C10, "K11": C11, "K12": C12, "K13": C13, "K15": C15}
@@ -78,12 +78,12 @@ pd.set_option("display.width", 250); print(S.round(4).to_string()); print(f"PBO(
 # conformal diagnostic (80%) for the used model, 1990-2014 coverage per term + pending sets
 U = POP[use]; cov = {}
 for t in range(1990, 2015):
-    c = U[(U.term < t) & (U.term >= t - 10) & U.y.notna()]; s = 1 - np.where(c.y == 1, c.P, 1 - c.P); q = np.quantile(s, .8)
+    c = U[(U.term < t) & (U.term >= t - 10) & U.y.notna()]; s = 1 - np.where(c.y == 1, c.P, 1 - c.P); q = np.nanquantile(s, .8)
     e = U[(U.term == t) & U.y.notna()]; inc1 = (1 - e.P) <= q; inc0 = e.P <= q
     cov[t] = {"coverage": float(np.where(e.y == 1, inc1, inc0).mean()), "singleton_share": float((inc1 ^ inc0).mean())}
-cv = pd.DataFrame(cov).T; print("conformal 80%: mean coverage %.3f, min %.3f, singleton share %.3f" % (cv.coverage.mean(), cv.coverage.min(), cv.singleton_share.mean()))
+cv = pd.DataFrame(cov).T; print("conformal 80%%: mean coverage %.3f, min %.3f, singleton share %.3f" % (cv.coverage.mean(), cv.coverage.min(), cv.singleton_share.mean()))
 c = U[(U.term >= 2005) & (U.term <= 2014) & U.y.notna()]   # pending conformal quantile from 2005-2014 (holdout not used)
-s = 1 - np.where(c.y == 1, c.P, 1 - c.P); q = float(np.quantile(s, .8))
+s = 1 - np.where(c.y == 1, c.P, 1 - c.P); q = float(np.nanquantile(s, .8))
 pend = {k: C[C.term == 2026][["docket", "P"]].rename(columns={"P": "P_" + k}) for k, C in POP.items()}
 PD = pd.concat([v.set_index("docket") for v in pend.values()], axis=1); PD["conformal80_set_" + use] = [("{rev}" if (1 - p) <= q and p > q else "{aff}" if p <= q and (1 - p) > q else "{rev,aff}") for p in PD["P_" + use]]
 PD.to_csv("eval_k11/pending_OT2026_K11pop.csv"); S.to_csv("eval_k11/selection_1990_2014.csv"); B.to_csv("eval_k11/per_term_brier.csv"); cv.to_csv("eval_k11/conformal_coverage.csv")
