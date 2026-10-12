@@ -102,3 +102,30 @@ winner, K10 and always-reverse on 2015-2025 and on the 37 settled Kalshi markets
 vs Kalshi d7 mid (fallback arg mid / last trade), Brier + log loss. Its sha256 is logged before running. No change after that read.
 **Forward:** if the winner differs from K10, refreeze as FORWARD_OT2026_frozen_v3.csv (v1, v2 kept), log in FORWARD_LOG.md, plus
 the K14 blend column. Re-freeze triggers (G18): new SCDB release, pending-row recoding, or a new trial selected.
+
+## Amendment 3 (2026-10-12 ~15:35 PT, written and committed BEFORE any K16+ computation): K16-K19 + disagreement tracker. N_trials = 26 (22 + 4).
+Approved by Amir via coordinator 2026-10-12 15:21 PT. Paper only; Olga's Mac only (one heavy job, >=30% RAM free). Skills: ml-trading-strategy-research, ml4t-skills.
+**Honesty note:** the 2015-2025 holdout and the 36/37 settled Kalshi markets were ALREADY read once (Amendment 2 single read, 2026-10-12 ~15:15 PT).
+Any 2015-2025 / Kalshi numbers produced under this amendment are PARTLY SEEN, informational only, never used for selection, and labelled so.
+All trials below are K10 (incumbent, Brier 1990-2014 per-term mean 0.2052 as recorded in TRIALS.md) plus added features, same RF, same rolling
+yearly retrain, same embargo, same K05 aggregation + Platt (prior 10 terms, embargoed). Only the feature set changes.
+- **Coverage gate (binding, checked before K16/K17/K19 are fitted):** oral-argument transcript coverage = share of SCDB argued dockets
+  (1990-2014) with a usable transcript (>= 2 advocate sections with speaker-attributed turns) from Oyez (cache in katz/oyez/raw) or, for
+  dockets Oyez lacks, supremecourt.gov argument_transcripts PDFs (available OT2000+; 1 request/2 s). If coverage < 90%, K16, K17 and K19
+  are NOT run and the shortfall is reported (they still count toward N=26). Cases without a transcript get oa_have=0 and zeros.
+- **K16 oral-argument counts:** per row (justice x case): that justice's question/turn count to petitioner side and to respondent side,
+  their difference, plus case totals (all justices) per side and difference; transcript speaker turns only (no audio, no outcome fields).
+- **K17 oral-argument wording sentiment (MPS):** K16 + per justice x side mean sentiment (P(negative)) of that justice's turns, from a fixed
+  pretrained transformer (distilbert-base-uncased-finetuned-sst-2-english, no fine-tuning, inference on torch device mps, batch 128,
+  truncation 128 tokens), plus case-level side means and the resp-minus-pet differences. Model weights hash logged.
+- **K18 Solicitor General position:** sg_side = +1 if the US/SG supports petitioner (as party: us_pet, or amicus: sg_amicus_pet),
+  -1 if respondent, 0 none; sg_party and sg_amicus indicators; SG prior support win rate (smoothed, prior terms only). No transcript needed.
+- **K19 post-argument re-forecast:** K17 + K18 features = information available right after the argument date. No leakage: features
+  from the case's own argument only; training on terms < t with the embargo (no same-term outcomes). For OT2026, a case is re-scored only
+  once its transcript is posted; unargued cases keep K10.
+- **Selection (unchanged, 1990-2014 only):** population K10, K16, K17, K18, K19. Winner = lowest mean per-term Brier; replaces K10 only if
+  per-term Brier sign test vs K10 p_holm < 0.05 (Holm over 4), Holm McNemar not significantly worse, PBO < 0.5 (CSCV 1991-2014, 8x3, 70).
+  DSR (N=26) reported; DSR > 0.95 binding for any money use (paper only regardless).
+- **Disagreement tracker (not a trial, no selection, no trading):** katz/DISAGREE_OT2026.csv lists OT2026 frozen markets with
+  |P_model(v2 K10) - Kalshi at freeze| >= 0.25; katz/DISAGREE_LOG.md logs outcomes forward (who was closer, Brier each) as markets resolve.
+- MPS use recorded per trial in run_meta.json (devices); RF parts are CPU (no sklearn GPU path).
