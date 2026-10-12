@@ -37,7 +37,7 @@ def build(trial, agg):
     else: C["P"] = roll_cal(C, "pm", "platt")
     return C
 POP = {"K00": ("K00", "raw"), "K01": ("K01", "raw"), "K02": ("K02", "raw"), "K03": ("K00", "platt"), "K04": ("K00", "iso"),
-       "K05": ("K00", "pmaj"), "K06": ("K06", "pmaj"), "K07": ("K07", "pmaj"), "K09": ("K09", "pmaj"), "K10": ("K10", "pmaj")}
+       "K05": ("K00", "pmaj"), "K06": ("K06", "pmaj"), "K07": ("K07", "pmaj"), "K09": ("K09", "pmaj")}
 CS = {}; missing = []
 for k, (src, agg) in POP.items():
     if os.path.exists(f"{RD}/{src}/preds.csv.gz"): CS[k] = build(src, agg)
