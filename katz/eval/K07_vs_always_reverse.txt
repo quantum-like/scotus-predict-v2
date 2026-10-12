@@ -1,0 +1,2 @@
+selection 1990-2014: n=2327 K07 acc=0.6884 always-rev acc=0.6850 McNemar ar-only/K07-only=(66,74) p=0.5543; Brier K07=0.2023 vs prior-rate 0.2150, terms better 20/25 sign p=0.004077
+SEEN informational 2015-2025: n=800 K07 acc=0.7325 always-rev acc=0.7275 McNemar ar-only/K07-only=(20,24) p=0.6516; Brier K07=0.1865 vs prior-rate 0.1985, terms better 9/11 sign p=0.06543

@@ -1,0 +1,21 @@
+{
+ "trial": "K09",
+ "model": "mlp",
+ "class_weight": null,
+ "features": [
+  "free"
+ ],
+ "fixes": "T0",
+ "seed": 0,
+ "dtype": "float32",
+ "cfg_hash": "b5595dd2695e",
+ "n_features": 1409,
+ "devices": {
+  "model": "mps"
+ },
+ "lightgbm_gpu": false,
+ "runtime_s": 596.5,
+ "python": "3.14.6",
+ "sklearn": "1.9.1",
+ "pandas": "3.0.6"
+}

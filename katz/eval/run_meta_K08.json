@@ -1,0 +1,22 @@
+{
+ "trial": "K08",
+ "model": "rf",
+ "class_weight": "orig",
+ "features": [
+  "free",
+  "oa"
+ ],
+ "fixes": "T0",
+ "seed": 0,
+ "dtype": "float32",
+ "cfg_hash": "0896f1f8c122",
+ "n_features": 1413,
+ "devices": {
+  "model": "cpu"
+ },
+ "lightgbm_gpu": false,
+ "runtime_s": 2413.7,
+ "python": "3.14.6",
+ "sklearn": "1.9.1",
+ "pandas": "3.0.6"
+}
