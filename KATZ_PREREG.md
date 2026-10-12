@@ -57,3 +57,15 @@ lcDispositionDirection, caseSource, caseOrigin, certReason).
 - K09: PyTorch MPS (record torch version and device); falls back to CPU only with the same code, logged.
 - Calibration and aggregation (K03-K05): reuse saved K00/K02 per-justice probabilities, no refit (CPU, seconds).
 - Each run's run_meta.json records which steps used MPS and which used CPU.
+
+## Amendment 1 (2026-10-11 ~22:00 PT, before rerunning): K10 pending-row fix. N_trials = 17.
+Audit of pending_cases_scdb_rows.csv (26 dockets, 233 rows) vs SCDB 2026_01 terms 2015-2025 found pre-decision fields blank in the
+pending rows that are almost never blank in training: lcDisposition 92% blank (hist 5%), lcDisagreement 100% (3%), certReason 100%
+(1%), caseOrigin 66% (3%), lawSupp 92% (2%). The feature code turns blanks into a -1 category (lc_outcome_-1, lc_disagreement_-1,
+cert_reason_-1, case_origin_-1, law_supp_-1; K07's cert_conflict = 0), which in training marks unusual cases, so every pending case
+is scored as unusual. Oyez `oyez_found` is 0 for not-yet-argued pending cases but ~1 in training.
+K10 = K07 method (features, K05 aggregation, Platt on prior 10 terms) with every feature that cannot be observed for the pending rows
+removed for ALL rows (train and predict): lc_outcome_* (from lcDisposition), lc_disagreement_*, cert_reason_*, cert_conflict,
+case_origin_*, law_supp_*, oyez_found. sg_amicus_* kept (0 = not known before argument; flagged). Values are NOT imputed.
+Selection is unchanged (K07 stays selected on 1990-2014); K10 is the live-use variant of K07 for the forward set and is reported
+on 1990-2014 vs K07 (Brier sign test) for transparency; 2015-2025 seen/informational. Refreeze as FORWARD_OT2026_frozen_v2.csv.

@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(ROOT, "src"))
 from legacy_model import get_raw_scdb_data, preprocess_raw_data
 from legacy_model_data import party_map_data
 SPEC = {"K00": ("rf", "orig", []), "K01": ("rf", "orig", ["strict"]), "K02": ("rf", "none", []),
-        "K06": ("gbm", None, []), "K07": ("rf", "orig", ["free"]), "K08": ("rf", "orig", ["free", "oa"]), "K09": ("mlp", None, ["free"])}
+        "K06": ("gbm", None, []), "K07": ("rf", "orig", ["free"]), "K08": ("rf", "orig", ["free", "oa"]), "K09": ("mlp", None, ["free"]), "K10": ("rf", "orig", ["free", "pendfix"])}
 ap = argparse.ArgumentParser(); ap.add_argument("--trial", required=True, choices=SPEC); ap.add_argument("--n-jobs", type=int, default=-1)
 ap.add_argument("--max-term", type=int); ap.add_argument("--min-term", type=int, help="smoke only"); ap.add_argument("--out")
 a = ap.parse_args(); MODEL, CW, FS = SPEC[a.trial]; OUT = a.out or os.path.join(HERE, "results", a.trial); os.makedirs(OUT, exist_ok=True)
@@ -56,6 +56,9 @@ if "free" in FS:
         for col in cols: F[col] = k[col].fillna(0).values.astype("float32")
         log(f"oyez features {cols}; matched rows {int(k.oyez_found.fillna(0).sum())}")
     elif "oa" in FS: raise SystemExit("K08 needs oyez/oyez_case_features.csv with oa_* columns")
+if "pendfix" in FS:   # Amendment 1: drop features unobservable for pending rows, for all rows
+    pf = [f for f in F.columns if f.startswith(("lc_outcome_", "lc_disagreement_", "cert_reason_", "case_origin_", "law_supp_"))] + [f for f in ("cert_conflict", "oyez_found") if f in F.columns]
+    F = F.drop(columns=pf); drop += pf
 log(f"features {F.shape}; dropped {len(drop)}")
 dd = pandas.to_datetime(raw.dateDecision, format="%m/%d/%Y", errors="coerce").values
 X = F.values; cols = list(F.columns); del F; gc.collect()
