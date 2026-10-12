@@ -69,3 +69,36 @@ removed for ALL rows (train and predict): lc_outcome_* (from lcDisposition), lc_
 case_origin_*, law_supp_*, oyez_found. sg_amicus_* kept (0 = not known before argument; flagged). Values are NOT imputed.
 Selection is unchanged (K07 stays selected on 1990-2014); K10 is the live-use variant of K07 for the forward set and is reported
 on 1990-2014 vs K07 (Brier sign test) for transparency; 2015-2025 seen/informational. Refreeze as FORWARD_OT2026_frozen_v2.csv.
+
+## Amendment 2 (2026-10-12 ~11:10 PT, before any K11+ run): K11-K15. N_trials = 22 (17 + 5).
+Based on katz/AUDIT_ML4T.md. Skills followed: see audit header. Everything paper only; runs on Olga's Mac only.
+**Live-valid population** (trials whose features exist for the pending rows): K10 (incumbent/reference), K11, K12, K13, K15.
+K07 is excluded from live use (Amendment 1); it stays the 1990-2014 historical winner of the old population.
+- **K11 missingness-aware (CPU, RF n_jobs=-1):** K07 feature set; for every row (train and test, all terms) each blank-prone group
+  (lc_outcome_*, lc_disagreement_*, cert_reason_*+cert_conflict, case_origin_*, law_supp_*, oyez_found+sg_amicus_*) is masked to the
+  missing code (-1 column = 1, others 0) with probability = that group's blank rate in the OT2026 pending rows, row-level Bernoulli,
+  seed 0. Pending rows keep their real blanks. History is thus scored under live missingness.
+- **K12 isotonic (CPU, seconds):** K10 per-justice preds, K05 aggregation, isotonic instead of Platt on the case P (prior 10 terms, embargoed).
+- **K13 Katz+Masse ensemble (CPU):** Masse case-RF (author params 2000 trees, depth 12, seed 9) rerun rolling from 1956 on Masse
+  features minus the pending-blank fields (lcDisagreement, certReason, lcDisposition, caseOrigin), with the term embargo, predicting
+  OT2026 pending too. P(petitioner) = P(liberal) if lcDispositionDirection = conservative (1), 1-P(liberal) if liberal (2); missing ->
+  K10 alone. Combined with K10 in log-odds by logistic regression on [logit K10, logit Masse] fit on the prior 10 terms.
+- **K14 model+Kalshi blend (forward only):** inv_logit(0.5 logit(selected model) + 0.5 logit(Kalshi last price)) (fixed weights,
+  Pilot-5 50/50 rule). Scored ONLY on OT2026 markets that resolve after the v3 freeze timestamp. No historical fit or selection.
+- **K15 hierarchical justice model (PyTorch, device mps):** K10 features standardized on train only; logit p_ij = global w.x_i + b_j +
+  u_j.x_i with L2 on u_j (partial pooling toward the court), trained per term from terms >= 1946 with the embargo, 4 epochs AdamW,
+  float32, seed 0; then K05 aggregation (Poisson-binomial + Platt). GPU boosting: none possible on macOS MPS (LightGBM GPU = OpenCL,
+  failed in K06; XGBoost/CatBoost have no MPS) - recorded, not a trial.
+- **Conformal:** split-conformal 80% prediction sets on K10/winner case P using prior-10-term nonconformity; reported as a diagnostic
+  with per-term coverage; not a probability model, so not a trial.
+**Selection rule (1990-2014 only, fixed now):** winner = lowest mean per-term Brier among the live-valid population; it replaces
+K10 only if (a) per-term Brier sign test vs K10 is significant after Holm across the 4 challengers (p_holm < 0.05), (b) Holm-corrected
+McNemar on case accuracy vs K10 is not significantly worse, (c) PBO < 0.5 by CSCV on 1991-2014 (8 groups x 3 terms, 70 complementary
+splits) within the population, and the CSCV distribution of its Brier (mean, std, worst) is reported. Otherwise K10 stays.
+DSR (per-term Brier skill vs prior-rate, skew/kurtosis, N=22) is reported; DSR > 0.95 is the binding gate for any money use; failing
+it means paper only (already the case).
+**Holdout, touched once:** 2015-2025 is NOT fresh (seen in earlier runs - stated honestly). After selection, one script run scores the
+winner, K10 and always-reverse on 2015-2025 and on the 37 settled Kalshi markets (terms 2023-2025, inside the holdout, also seen),
+vs Kalshi d7 mid (fallback arg mid / last trade), Brier + log loss. Its sha256 is logged before running. No change after that read.
+**Forward:** if the winner differs from K10, refreeze as FORWARD_OT2026_frozen_v3.csv (v1, v2 kept), log in FORWARD_LOG.md, plus
+the K14 blend column. Re-freeze triggers (G18): new SCDB release, pending-row recoding, or a new trial selected.
