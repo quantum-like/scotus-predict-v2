@@ -4,6 +4,10 @@
 | 2026-10-11T20:53:44-07:00 | katz/FORWARD_OT2026_frozen.csv | 50413e04a7f2de3be82c39d29f4d3071a412d514d6853cf957996a4c66ed8103 |
 | 2026-10-11T20:53:44-07:00 | katz/eval/pending_OT2026_K07.csv (all 26 pending dockets) | cacb454fa709ea94ffd4d9581a55dc80296a6b6c74cc96ed95d1113c1ac28fda |
 | 2026-10-11T20:53:44-07:00 | K07 preds.csv.gz on Olga's Mac (~/scotus-predict-rerun/katz/results/K07/, not committed: size) | 86367fa502e51a6bcff504a0bc3ef36dd01c838acce6020fb049f26892a8cb6b |
+| 2026-10-12T10:37:32-07:00 | katz/FORWARD_OT2026_frozen_v2.csv (K10, Amendment 1; supersedes v1 for live use, v1 kept) | ec8def5eb064d88bfedea0b35098fa7b06bda045e70f574719dded6be59c163e |
+| 2026-10-12T10:37:32-07:00 | katz/eval_k10/pending_OT2026_K10.csv (all 26 pending dockets) | 00c927b5a6abf20fc047ca6641e947f8170975da2eea867ee23bc5f4267fb264 |
+| 2026-10-12T10:37:32-07:00 | K10 preds.csv.gz on Olga's Mac (~/scotus-predict-rerun/katz/results/K10/, not committed: size) | see eval_k10/K10_preds.sha256 |
+v2 notes: AR15 P = mean of 25-238/25-566 (same rule as v1); its price is undefined in the connector both times. Kalshi also lists KXSCOTUSCASE-GENBLA28 (Genalo v. Black, Yes 1.00, volume 0), which has no docket in the pending rows and is not in v1 or v2.
 Kalshi prices: last Yes price per market from the read-only connector at freeze (eval/kalshi_markets_at_freeze.txt); bid/ask not
 returned by the connector at this time. YES assumed = petitioner wins (check wording_match per market; 'partial/looser/stricter'
 rows are flagged). Scoring on resolution: Brier/log loss/accuracy vs always-reverse and vs the Kalshi price, paper P&L with fee
