@@ -13,7 +13,9 @@ from legacy_model import get_raw_scdb_data, preprocess_raw_data
 from legacy_model_data import party_map_data
 SPEC = {"K00": ("rf", "orig", []), "K01": ("rf", "orig", ["strict"]), "K02": ("rf", "none", []),
         "K06": ("gbm", None, []), "K07": ("rf", "orig", ["free"]), "K08": ("rf", "orig", ["free", "oa"]), "K09": ("mlp", None, ["free"]), "K10": ("rf", "orig", ["free", "pendfix"]),
-        "K11": ("rf", "orig", ["free", "missaug"]), "K15": ("hier", None, ["free", "pendfix"])}
+        "K11": ("rf", "orig", ["free", "missaug"]), "K15": ("hier", None, ["free", "pendfix"]),
+        "K16": ("rf", "orig", ["free", "pendfix", "oa16"]), "K17": ("rf", "orig", ["free", "pendfix", "oa16", "sent17"]),
+        "K18": ("rf", "orig", ["free", "pendfix", "sg18"]), "K19": ("rf", "orig", ["free", "pendfix", "sg18", "postarg"] + (["oa16", "sent17"] if os.environ.get("K19_OA") == "1" else []))}
 ap = argparse.ArgumentParser(); ap.add_argument("--trial", required=True, choices=SPEC); ap.add_argument("--n-jobs", type=int, default=-1)
 ap.add_argument("--max-term", type=int); ap.add_argument("--min-term", type=int, help="smoke only"); ap.add_argument("--out")
 a = ap.parse_args(); MODEL, CW, FS = SPEC[a.trial]; OUT = a.out or os.path.join(HERE, "results", a.trial); os.makedirs(OUT, exist_ok=True)
@@ -57,6 +59,31 @@ if "free" in FS:
         for col in cols: F[col] = k[col].fillna(0).values.astype("float32")
         log(f"oyez features {cols}; matched rows {int(k.oyez_found.fillna(0).sum())}")
     elif "oa" in FS: raise SystemExit("K08 needs oyez/oyez_case_features.csv with oa_* columns")
+if "sg18" in FS:   # Amendment 3 K18: SG position (party or amicus) + SG prior support win rate (prior terms only)
+    sp = numpy.clip(F["us_pet"].values + F.get("sg_amicus_pet", 0 * F["us_pet"]).values, 0, 1); sr = numpy.clip(F["us_resp"].values + F.get("sg_amicus_resp", 0 * F["us_pet"]).values, 0, 1)
+    F["sg_side"] = (sp - sr).astype("float32"); F["sg_any"] = ((sp + sr) > 0).astype("float32"); F["sg_amicus_any"] = numpy.clip(F.get("sg_amicus_pet", 0 * F["us_pet"]).values + F.get("sg_amicus_resp", 0 * F["us_pet"]).values, 0, 1).astype("float32")
+    c = pandas.DataFrame({"d": raw.docketId.values, "t": term, "s": F["sg_side"].values, "rev": (raw.case_outcome_disposition.values > 0).astype(float), "ok": raw.case_outcome_disposition.values >= 0}).drop_duplicates("d")
+    c = c[(c.s != 0) & c.ok]; c["win"] = numpy.where(c.s > 0, c.rev, 1 - c.rev); g = c.groupby("t").win.agg(["sum", "count"]).sort_index()
+    cs = g.cumsum().shift(1).fillna(0); rate = ((cs["sum"] + 3) / (cs["count"] + 4)).reindex(range(int(term.min()), int(term.max()) + 1)).ffill().fillna(0.75)
+    F["sg_prior_winrate"] = (rate.reindex(term).values * F["sg_any"].values).astype("float32")
+if "postarg" in FS:   # Amendment 3 K19 non-transcript post-argument features: argument month (from SCDB dateArgument), advocates per side (Oyez)
+    da = pandas.to_datetime(raw.dateArgument, format="%m/%d/%Y", errors="coerce")
+    F["arg_month_in_term"] = numpy.where(da.notna(), (da.dt.month.values - 10) % 12, -1).astype("float32"); F["argued"] = da.notna().values.astype("float32")
+    pa = pandas.read_csv(os.path.join(HERE, "k16", "postarg_case.csv"), dtype={"docket": str})
+    k = raw[["term", "docket"]].astype({"docket": str}).assign(docket=lambda d: d.docket.str.strip()).merge(pa.drop_duplicates(["term", "docket"]), on=["term", "docket"], how="left")
+    for col in ("n_adv_pet", "n_adv_resp", "n_adv_amicus"): F[col] = k[col].fillna(0).values.astype("float32")
+if "oa16" in FS:   # Amendment 3 K16/K17: per justice x side turn counts (+ sentiment), case totals
+    jn = raw.justiceName.astype(str).str.replace(r"[^A-Za-z]", "", regex=True).str.lower().values
+    J = pandas.read_csv(os.path.join(HERE, "k16", "oa_justice.csv"), dtype={"docket": str}); Cc = pandas.read_csv(os.path.join(HERE, "k16", "oa_case.csv"), dtype={"docket": str})
+    jc = [c for c in J.columns if c.startswith("j_") and ("sent" not in c or "sent17" in FS)]; cc = [c for c in Cc.columns if c.startswith("c_") and ("sent" not in c or "sent17" in FS)]
+    key = raw[["term", "docket"]].astype({"docket": str}).assign(docket=lambda d: d.docket.str.strip())
+    kc = key.merge(Cc[["term", "docket"] + cc].drop_duplicates(["term", "docket"]), on=["term", "docket"], how="left")
+    J["jkey"] = J["last"].astype(str).str.replace(r"[^A-Za-z]", "", regex=True).str.lower(); lasts = sorted(set(J.jkey), key=len, reverse=True)
+    key["jkey"] = [next((l for l in lasts if n.endswith(l)), "") for n in jn]
+    kj = key.merge(J[["term", "docket", "jkey"] + jc].drop_duplicates(["term", "docket", "jkey"]), on=["term", "docket", "jkey"], how="left")
+    for col in cc: F[col] = kc[col].fillna(0).values.astype("float32")
+    for col in jc: F[col] = kj[col].fillna(0).values.astype("float32")
+    F["oa_have"] = kc[cc[0]].notna().values.astype("float32"); log(f"oa rows with transcript {int(F.oa_have.sum())}; justice-matched {int(kj[jc[0]].notna().sum())}")
 if "missaug" in FS:   # Amendment 2 K11: mask blank-prone groups at the pending blank rate, all non-pending rows, seed 0
     pend = term == 2026; rng = numpy.random.default_rng(0); MASK = {}
     grp = {g: [c for c in F.columns if c.startswith(g)] for g in ("lc_outcome_", "lc_disagreement_", "cert_reason_", "case_origin_", "law_supp_")}

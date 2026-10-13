@@ -1,0 +1,24 @@
+{
+ "trial": "K18",
+ "model": "rf",
+ "class_weight": "orig",
+ "features": [
+  "free",
+  "pendfix",
+  "sg18"
+ ],
+ "fixes": "T0",
+ "seed": 0,
+ "dtype": "float32",
+ "cfg_hash": "d91ae1cec4ca",
+ "n_features": 1184,
+ "devices": {
+  "model": "cpu"
+ },
+ "lightgbm_gpu": false,
+ "missaug": null,
+ "runtime_s": 2158.0,
+ "python": "3.14.6",
+ "sklearn": "1.9.1",
+ "pandas": "3.0.6"
+}

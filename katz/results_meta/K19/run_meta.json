@@ -1,0 +1,25 @@
+{
+ "trial": "K19",
+ "model": "rf",
+ "class_weight": "orig",
+ "features": [
+  "free",
+  "pendfix",
+  "sg18",
+  "postarg"
+ ],
+ "fixes": "T0",
+ "seed": 0,
+ "dtype": "float32",
+ "cfg_hash": "5a7ec55e4a82",
+ "n_features": 1189,
+ "devices": {
+  "model": "cpu"
+ },
+ "lightgbm_gpu": false,
+ "missaug": null,
+ "runtime_s": 2318.1,
+ "python": "3.14.6",
+ "sklearn": "1.9.1",
+ "pandas": "3.0.6"
+}

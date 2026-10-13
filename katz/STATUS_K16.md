@@ -1,0 +1,14 @@
+# STATUS K16 (Amendment 3)
+- Amendment 3 committed on box (59b4d24) before any run.
+- Oyez strict per-docket coverage 1990-2014: 86.9% (2251 argued dockets). Gate is STRICT per docket (Amir 15:25).
+- 15:2x fetching supremecourt.gov PDFs for 170 OT2000+ missing dockets.
+- 15:4x PT Mac back; sg_fetch restarted (120 missing dockets OT2004+, 50 OT2000-03 which use unattributed QUESTION: and cannot count).
+- 15:58 PT supremecourt.gov fetch done: 11 docket-named PDFs (6 are OT2000-01 with unattributed QUESTION: -> unusable); 4 usable.
+- STRICT per-docket coverage 1990-2014 = 87.1% (1961/2251) < 90% -> K16, K17 EXCLUDED (counted). Secondary (not gate): +53 dockets named in a lead transcript caption -> 89.3%, still < 90%.
+- K18 and K19 (non-transcript post-argument features only) run on CPU (RF). No MPS trial (K17 was the only MPS trial).
+- 16:03 PT K18 started (CPU RF n_jobs=-1)
+- 16:39 PT K18 exit 0
+- 16:39 PT K19 started (CPU RF n_jobs=-1)
+- 17:18 PT K19 exit 0
+- 10:50 PT Oct 13 eval started
+- 10:51 PT eval exit 0: lowest K19 0.2022, K18 0.2032, K10 0.2052; p_holm 0.69/0.43; PBO 0.629 -> K10 stays
