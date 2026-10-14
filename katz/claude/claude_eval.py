@@ -12,7 +12,7 @@ from sklearn.linear_model import LogisticRegression
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import stage2 as S
 REPO = os.path.dirname(os.path.dirname(HERE)); OUT0 = os.path.join(REPO, "katz", "results", "claude")
-OVR = {k: v for k, v in os.environ.items() if k.startswith("CLAUDE_")}; DRY = bool(OVR)   # any override = dry run (synthetic features)
+OVR = {k: os.environ[k] for k in ("CLAUDE_FEAT", "CLAUDE_LOC", "CLAUDE_OUT") if k in os.environ}; DRY = bool(OVR)   # our overrides only (the harness sets other CLAUDE_* vars)
 OUT = os.environ.get("CLAUDE_OUT", OUT0); LOC = os.environ.get("CLAUDE_LOC", os.path.join(HERE, "results_local"))
 assert not (DRY and os.path.abspath(OUT) == os.path.abspath(OUT0)), "dry run must not write to katz/results/claude"
 os.makedirs(OUT, exist_ok=True); os.makedirs(LOC, exist_ok=True)
