@@ -1,0 +1,100 @@
+{
+  "summary": "Verify the Amendment C1 selection result (recompute + bug hunt on KC1) before the holdout read",
+  "agentCount": 2,
+  "logs": [],
+  "result": [
+    {
+      "task": "recompute",
+      "verdict": "consistent",
+      "findings": [
+        "I recomputed everything from P_wf_all.csv.gz and SCDB without importing claude_eval.py. SCDB rows for terms 2015 and later were dropped right after loading, before any outcome column was touched. Kalshi files were not read, no model was fitted, the repo is untouched and git status is clean. Scripts are in /private/tmp/claude-501/-Users-olgavlasova-Library-Application-Support-Claude-scratch-workspaces-205b7159-dd36-4891-b166-00b588a26153-bae797a9-3206-4266-9156-bd4441ce8c9d-scratch-2026-10-12-d8df33/91f9fb1b-99ea-4a1e-9281-ca0d72b55958/scratchpad/selcheck/ (recompute.py, extra.py, pbo4.py). Each run used under 3 s of CPU.",
+        "Population: 1990-2014 has 2,251 argued dockets (dateArgument present). One of them has partyWinning = 2 and is excluded, leaving n = 2,250 (1,436 wins, 814 losses). n counts dockets, not cases: the 2,250 dockets cover 2,030 distinct caseIds, so consolidated dockets count separately. The amendment's own n = 2,250 is also docket-level. partyWinning, dateArgument and term are constant within each docketId (checked with an assert). Every model has a non-null P for all 2,250 rows. P_wf_all also has 268 rows in 1990-2014 outside the population (not argued, or y = 2). They are correctly excluded.",
+        "per_term_brier_WF.csv: all 25 terms x {K10, K10s, KC1-KC4, prior_rate} match. The largest difference is 8.3e-17.",
+        "selection_1990_2014.csv: these columns match within 1.1e-16, and the count strings match exactly: wf_mean_term_brier, wf_pooled_brier, wf_acc (P > 0.5; no P equals 0.5 exactly, so how ties are broken does not matter), wf_logloss, mean_P, wf_ece10, terms_better_vs_K10s, p_sign_vs_K10s and its Holm value, terms_better_vs_K10rec, p_sign_vs_K10rec, the McNemar counts and p vs K10s, K10 and always-petitioner, the Holm values (6-model family for AR, 5-model family for CPCV AR), cpcv_mean_term_brier, cpcv_terms_better_vs_K10s, SR_wf and SR_cpcv.",
+        "Only sharpness_sd differed, by 2.0e-5 to 3.2e-5. This is a convention, not a bug: the file uses the sample SD (ddof = 1, the pandas default, as in k11_eval). Recomputed with ddof = 1 it matches, e.g. K10 0.14183316 and KC1 0.09122896.",
+        "Sign test is one-sided, P(X >= k) under Bin(25, 0.5). Terms where each challenger beats K10s, in WF: KC1 4/25, KC2 5/25, KC3 4/25, KC4 5/25, giving p = 0.99992, 0.99954, 0.99992, 0.99954. The Holm-adjusted p is 1.0 for all four. No term is a tie.",
+        "Winner check: KC1 has the lowest WF mean Brier among the challengers (0.227154; then KC2 0.227445, KC3 0.227535, KC4 0.227741). verdict.json says winner = KC1, which is correct.",
+        "Gate (a) is correctly false. The Holm sign-test p is 1.0, and KC1's Brier of 0.227154 is above K10s's 0.220848.",
+        "Gate (b) is correctly false. On McNemar vs K10s, KC1 is right where K10s is wrong in 66 cases and wrong where K10s is right in 98. The exact two-sided p is 0.015235; the Holm value over 4 challengers is 0.045705, below 0.05. KC1 is therefore significantly worse on accuracy (0.6391 vs 0.6533). The Holm margin is thin, but the verdict does not depend on it because (a) and (d) also fail.",
+        "Gate (c) is correctly true. PBO by CSCV on WF {K10s, KC1-KC4}, 1991-2014, 8 blocks of 3 terms, 70 splits: I get PBO = 0.0, matching verdict pbo_wf. CPCV PBO is also 0.0, matching pbo_cpcv. Caveat: the pass is vacuous. The non-selectable K10s has the best in-sample score in all 70 splits and is also best out of sample. A diagnostic PBO over the challengers alone (KC1-KC4, not gated) is 0.40 on WF and 0.586 on CPCV.",
+        "Gate (d) is correctly false. CPCV mean per-term Brier is 0.226490 for KC1 against 0.219890 for K10s. All four challengers fail (0.225890 to 0.226490), and they beat K10s in only 5 or 6 of 25 terms.",
+        "Final decision is correct. replaces_K10 = false, so K10 stays the model for forward use (used_for_forward = K10).",
+        "Edge gate is correctly false. KC1's deflated Sharpe ratio (DSR) is 0.408958 on WF and 0.644121 on CPCV, both below 0.95. PBO is 0 for both WF and CPCV, so those parts pass, and replaces_K10 is false, so edge_survives = false. n_trials = 37 matches the amendment.",
+        "DSR internal consistency: I inverted the k11_eval DSR formula (N = 37, T = 25, sample skew, non-excess kurtosis). Every model's reported DSR, in both WF and CPCV, implies the same benchmark SR0 = 0.46778826, which corresponds to an SR-pool SD of 0.21671895. So one SR-variance pool was used for both series. I could not rebuild the pool's variance itself: it needs the 15 recorded models K00-K19 scored on the primary metric, which were not inputs here.",
+        "Note (not a mismatch): the non-selectable reference K10s has DSR_cpcv = 0.9550, just above 0.95, but DSR_wf = 0.8411. It would not clear the edge gate either, and it cannot be selected in any case."
+      ],
+      "numbers": "Primary population (argued dockets, y = partyWinning in {0,1}, 1990-2014): n = 2,250 dockets (2,030 cases); 1 docket with partyWinning = 2 excluded.\n\nWF mean per-term Brier / pooled accuracy (recomputed = file, difference < 1e-16):\nK10 0.22313843 / 0.65644\nK10s 0.22084817 / 0.65333\nKC1 0.22715369 / 0.63911\nKC2 0.22744514 / 0.63467\nKC3 0.22753509 / 0.64000\nKC4 0.22774104 / 0.63733\n\nTerms beating K10s (WF), one-sided sign-test p, Holm p:\nKC1 4/25, 0.9999217, 1.0\nKC2 5/25, 0.9995447, 1.0\nKC3 4/25, 0.9999217, 1.0\nKC4 5/25, 0.9995447, 1.0\n\nMcNemar vs K10s (challenger right & K10s wrong / challenger wrong & K10s right), p, Holm p:\nKC1 66/98, 0.015235, 0.045705\nKC2 69/111, 0.002155, 0.008620\nKC3 88/118, 0.043067, 0.045705\nKC4 89/125, 0.016530, 0.045705\n\nCPCV mean per-term Brier: K10s 0.219890, KC1 0.226490, KC2 0.226094, KC3 0.226308, KC4 0.225890.\n\nPBO: WF 0.0 and CPCV 0.0 (K10s best in-sample in all 70 splits). Challengers-only diagnostic: WF 0.40, CPCV 0.586.\n\nDSR (N = 37): KC1 WF 0.4090, CPCV 0.6441. All reported DSRs imply the same SR0 = 0.467788 (SR-pool SD 0.216719).\n\nOnly difference found: sharpness_sd, off by 2.0e-5 to 3.2e-5 because the file uses ddof = 1; it matches when recomputed that way.\n\nGates: a = F, b = F, c = T, d = F, so replaces_K10 = F and edge_survives = F, all as in verdict.json."
+    },
+    {
+      "task": "bughunt",
+      "verdict": "real-effect",
+      "findings": [
+        "Verdict: no bug found. KC1's worse Brier is a real effect of the registered strict20 drops. About half of it comes from losing the Oyez SG-amicus flags. The rest is consistent with losing the issue/law_type codes and argument month, plus the forest changing when features are removed. Nothing in the repo or git state was changed. Scratch scripts and the term <= 2014 copies of the preds are in /private/tmp/claude-501/kc1_audit/ (s1_features.py ... s7_tests.py). No statistic used outcomes from terms >= 2015, and the Kalshi files were not read.",
+        "(1) Feature diff. KC1 has 862 features and K10 has 1180. KC1 adds none and removes exactly 318: issue_* 279, issue_area_* 15, law_type_* 9, argument_month_* 13 (from -1 through 12) and sg_amicus_pet/sg_amicus_resp. This matches the set built from the registered prefixes exactly. No column left in KC1 contains issue, law_, argument, sg_, oyez or month. KC1's column order is K10's order with the removed columns filtered out.",
+        "(1) Alignment. In claude_katz_trial.py, X = F.values and cols = list(F.columns) are taken from the same DataFrame after every drop and addition, so X and the names cannot drift apart. The forest also never uses the names: train and test rows are slices of the same X. Apart from the docstring, ROOT/output paths and the three strict20 lines, the code is identical to katz/katz_trial.py, the copy in the repo. The 'dropped' counts check out: K10 dropped 589, and 589 - 1 (oyez_found, never loaded) + 316 = 904, which matches KC1's log.",
+        "(1) Inputs. src/legacy_model*.py (dated 2026-10-08), the SCDB files and pending_cases_scdb_rows.csv are all older than the K10 run (2026-10-11 21:49). Both runs logged identical train/test/embargo counts for every term (e.g. 1990 train=240005 test=1259; 2010 emb_dropped=9). The preds sha256 values match verdict.json: KC1 a0d13818..., K10 c9b1f6a5...",
+        "(2) Stage-1 keys. Both preds files have 46,793 rows. Every column except p_rev is identical row by row, and both have 22,647 rows in 1990-2014. On (docketId, justice) the outer join matches all rows with 0 left-only and 0 right-only. docket, term, justice_outcome_disposition, case_outcome_disposition, lcDispositionDirection, petitioner and respondent have 0 mismatches. Neither model has a NaN p_rev.",
+        "(2) Per-justice p_rev, KC1 vs K10, by decade. 1990s: corr 0.867, mean 0.488 vs 0.492, sd 0.148 vs 0.146, share > 0.5 0.493 vs 0.514. 2000s: corr 0.868, mean 0.551 vs 0.550, sd 0.151 vs 0.145, share > 0.5 0.637 vs 0.635. 2010-14: corr 0.803, mean 0.610 vs 0.608, sd 0.120 vs 0.128, share > 0.5 0.845 vs 0.804. All rows: corr 0.871 (Spearman 0.848), mean absolute difference 0.058. Location and spread are about the same, so this is not a scaling, sign or shift bug. What changes is how well the predictions rank outcomes: per-justice AUC on argued rows falls from 0.667 to 0.641, and stage-1 Brier on the reverse label rises from 0.2179 to 0.2253.",
+        "(3) Stage-2 frames. stage2.frames builds the same primary population for KC1 and K10s: 2,250 dockets, identical sets. term, y, argued, y_rev, s, cod and decision date have 0 mismatches. The C index is the same (4,347 dockets, 1980-2014), and J has 39,081 rows in both with 0 jod or s mismatches. I re-ran the registered WF stage 2 from inputs cut at term <= 2014. It reproduces P_wf_all for both KC1 and K10s to within 1e-16 and gives the same mean per-term Brier: K10s 0.22085, KC1 0.22715, KC2 0.22745, KC3 0.22754, KC4 0.22774, K10 as recorded 0.22314.",
+        "The gap is all in discrimination, not calibration. Calibration error is the same for both models (reliability 0.0017 vs 0.0018). Resolution is 0.0048 for KC1 vs 0.0105 for K10s, a difference of 0.0058, about the whole Brier gap. Case-level AUC is 0.577 vs 0.623, and KC1's P is less spread out (sd 0.091 vs 0.125). The no-fit Poisson-binomial majority from raw p_rev already shows it (AUC 0.581 vs 0.629), so stage 2 inherits the loss rather than causing it. KC1 is worse in all five 5-term blocks and in 21 of 25 terms (per-term difference +0.0063, t = 4.2). A term-cluster bootstrap gives pooled Brier difference +0.0064 [0.0037, 0.0090] and AUC difference -0.047 [-0.061, -0.033].",
+        "(4) SG amicus is the strongest dropped field. On 1990-2014 argued cases (2,008 of 2,250 matched in Oyez), petitioner-win rates are: SG amicus for petitioner 0.792 (n=318), for respondent 0.380 (n=184), neither 0.637 (n=1,747); chi2 = 85.7, p = 2e-19. Used alone, in-sample, it could lower Brier by up to 0.0089. Combined with US party it could lower it by 0.0093, against 0.0025 for the US-party flags that KC1 keeps. K10s uses the flags: its mean P is 0.690 in pet-supported cases vs 0.568 in resp-supported cases. KC1 barely separates them: 0.645 vs 0.628. On the 503 SG-amicus cases, KC1's AUC is 0.505 against 0.632 for K10s, and its Brier is 0.2338 against 0.2189. These cases contribute 0.0034 of the 0.0064 pooled gap.",
+        "(4) The remaining 0.0031 of the gap is on the 1,747 cases without an SG amicus (Brier +0.0040 per case). This is consistent with losing issue/law codes and argument month. Recorded trials K00 -> K01, which drop issue/issue_area/law_type/law_supp and nothing else, lose 0.010 raw-pmaj AUC on this primary population (0.6145 -> 0.6049). Argument month is weakly informative among argued cases (Dec 0.721 vs Feb 0.577; chi2 = 14.2, df 6, p = 0.027). Its -1 level also marked summary dispositions in stage-1 training (93% reverse votes). Without it, KC1's p_rev separates summary rows from argued rows much less well (AUC 0.568 vs 0.684). issueArea alone is not significant among argued cases (chi2 p = 0.52); lawType is borderline (p = 0.058).",
+        "Context from recorded trials, all no-fit raw-pmaj AUC on the same 2,250 cases: K00 0.614, K01 0.605, K07 0.638, K10 0.629, K18 0.640, KC1 0.581. On SG-amicus cases: K00 0.574, K07 0.667, K10 0.657, K18 0.696, KC1 0.506. Feature-set changes that should be neutral there (pendfix K07 -> K10, the SG additions K10 -> K18) move AUC by about 0.01. KC1's -0.048 is about five times that. The registered drop of sg_amicus_* removes real pre-argument information (an SG merits amicus is filed before argument). Changing it would need a new registered trial, not a re-fit under this amendment."
+      ],
+      "numbers": "Primary WF mean per-term Brier, 1990-2014, n = 2,250 (reproduced to within 1e-16): K10s 0.22085, KC1 0.22715, KC2 0.22745, KC3 0.22754, KC4 0.22774, K10 as recorded 0.22314. Pooled Brier: KC1 0.22798 vs K10s 0.22156, gap +0.00643 (term-cluster bootstrap 95% CI [0.00369, 0.00900]). Murphy decomposition: reliability 0.00173 vs 0.00181; resolution 0.00477 vs 0.01053; uncertainty 0.2309. AUC of WF P: 0.5770 vs 0.6234 (difference -0.0465 [-0.0613, -0.0332]). Raw no-fit pmaj AUC: 0.5810 vs 0.6292. KC1 worse in 21 of 25 terms, per-term t = 4.19. Features: 1180 -> 862, removing issue_ 279, issue_area_ 15, law_type_ 9, argument_month_ 13, sg_amicus_ 2 (318 total, nothing else); column order preserved. Per-justice p_rev, KC1 vs K10, 22,647 rows (all keys and labels identical): corr 0.871; mean 0.532 vs 0.533; sd 0.152 vs 0.149; share > 0.5 0.607 vs 0.608. Corr by decade: 1990s 0.867, 2000s 0.868, 2010-14 0.803. Per-justice AUC on argued rows: 0.641 vs 0.667. SG amicus petitioner-win rate: pet 0.792 (n=318), resp 0.380 (n=184), none 0.637 (n=1,747), chi2 p = 2e-19. On SG-amicus cases, AUC KC1 0.505 vs K10s 0.632, and these cases contribute 0.0034 of the 0.0064 gap. Non-SG cases contribute 0.0031. K00 -> K01 (issue/law drop only): raw pmaj AUC 0.6145 -> 0.6049. Argument month chi2 p = 0.027; issueArea p = 0.52; lawType p = 0.058."
+    }
+  ],
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Verify"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "verify:recompute",
+      "phaseIndex": 1,
+      "phaseTitle": "Verify",
+      "agentId": "a31ce6e4f83673ade",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791951255589,
+      "queuedAt": 1791951255538,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "consistent",
+      "promptPreview": "Context: SCOTUS outcome-model research, paper only. Repo \"/Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2\" (branch katz-claude-2). The pre-registration is katz/AMENDMENT_C1_CLAUDE.md.\nThe evaluation katz/claude/claude_eval.py just ran and wrote katz/results…",
+      "promptFramed": true,
+      "lastProgressAt": 1791951472196,
+      "tokens": 113514,
+      "toolCalls": 11,
+      "durationMs": 216605,
+      "resultPreview": "{\"verdict\":\"consistent\",\"findings\":[\"I recomputed everything from P_wf_all.csv.gz and SCDB without importing claude_eval.py. SCDB rows for terms 2015 and later were dropped right after loading, before any outcome column was touched. Kalshi files were not read, no model was fitted, the repo is untouched and git status is clean. Scripts are in /private/tmp/claude-501/-Users-olgavlasova-Library-Appli…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "verify:bughunt",
+      "phaseIndex": 1,
+      "phaseTitle": "Verify",
+      "agentId": "a0a712f44d8a4d412",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791951255590,
+      "queuedAt": 1791951255539,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "lastToolSummary": "real-effect",
+      "promptPreview": "Context: SCOTUS outcome-model research, paper only. Repo \"/Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2\" (branch katz-claude-2). The pre-registration is katz/AMENDMENT_C1_CLAUDE.md.\nThe evaluation katz/claude/claude_eval.py just ran and wrote katz/results…",
+      "promptFramed": true,
+      "lastProgressAt": 1791951626545,
+      "tokens": 154247,
+      "toolCalls": 18,
+      "durationMs": 369585,
+      "resultPreview": "{\"verdict\":\"real-effect\",\"findings\":[\"Verdict: no bug found. KC1's worse Brier is a real effect of the registered strict20 drops. About half of it comes from losing the Oyez SG-amicus flags. The rest is consistent with losing the issue/law_type codes and argument month, plus the forest changing when features are removed. Nothing in the repo or git state was changed. Scratch scripts and the term <=…"
+    }
+  ],
+  "totalTokens": 267761,
+  "totalToolCalls": 29
+}
