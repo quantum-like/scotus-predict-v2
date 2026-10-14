@@ -1,0 +1,120 @@
+{
+ "winner_lowest_wf_brier": "KC1",
+ "comparator": "K10s",
+ "selection_gates": {
+  "a_sign_vs_K10s_holm_lt_0.05_and_lower_brier": false,
+  "b_not_sig_worse_mcnemar_vs_K10s": false,
+  "c_pbo_wf_lt_0.5": true,
+  "d_cpcv_brier_below_K10s": false
+ },
+ "replaces_K10": false,
+ "used_for_forward": "K10",
+ "edge_gates": {
+  "replaces_K10": false,
+  "DSR_wf_gt_0.95": false,
+  "DSR_cpcv_gt_0.95": false,
+  "pbo_wf_lt_0.5": true,
+  "pbo_cpcv_lt_0.5": true
+ },
+ "edge_survives": false,
+ "pbo_wf": 0.0,
+ "pbo_cpcv": 0.0,
+ "n_trials": 37,
+ "dsr_sr_variance_from": [
+  "K00",
+  "K01",
+  "K02",
+  "K06",
+  "K07",
+  "K09",
+  "K10",
+  "K10s",
+  "K11",
+  "K12",
+  "K13",
+  "K15",
+  "K16",
+  "K17",
+  "K18",
+  "K19",
+  "KC1",
+  "KC2",
+  "KC3",
+  "KC4"
+ ],
+ "cpcv_active_families": {
+  "K10s": {
+   "justice": [
+    "lp"
+   ],
+   "case": [
+    "lpm"
+   ]
+  },
+  "KC1": {
+   "justice": [
+    "lp"
+   ],
+   "case": [
+    "lpm"
+   ]
+  },
+  "KC2": {
+   "justice": [
+    "lp",
+    "sA_theta",
+    "sA_med",
+    "s_lc"
+   ],
+   "case": [
+    "lpm"
+   ]
+  },
+  "KC3": {
+   "justice": [
+    "lp"
+   ],
+   "case": [
+    "lpm",
+    "lc_dc",
+    "s_lc_dc"
+   ]
+  },
+  "KC4": {
+   "justice": [
+    "lp",
+    "sA_theta",
+    "sA_med",
+    "s_lc"
+   ],
+   "case": [
+    "lpm",
+    "lc_dc",
+    "s_lc_dc"
+   ]
+  }
+ },
+ "input_sha256": {
+  "katz/claude/results_local/KC1/preds.csv.gz": "a0d138189243898af5791696c9c201f8d7c4fb3f3c53ea21f998beb683bf25c0",
+  "katz/claude/results_local/KC1/run_meta.json": "b7f540fba1810230c40ed0f6e718a8e5e1589c14a9eca0728bf2cff71b47b345",
+  "katz/claude/results_local/KC1/features.json": "0b73b32cff4ea882bd9a47ca9aef5d35ffba41612082d74383b9828a4df32800",
+  "katz/claude/features/pit_theta.csv": "08e2b1f6f8fc110b2f92c9587e0804c97ebf8e8a864fd43763622c365446c74c",
+  "katz/claude/features/lc_ideology.csv": "706aff6c2611163c048790fa68a0019d27f805b4b3b658721bfec7a880e10b92",
+  "katz/claude/features/cert_docket.csv": "50c2eb08d9ff21ab64a12f08d9e0ccbcf408399b0800631c3e3f08e284d92d48",
+  "katz/claude/features/qp_split.csv": "b6bfac71afca2412b96fc458b36673d1787a961b10f7a205f027086a1eb01e0b",
+  "/Users/olgavlasova/scotus-predict-rerun/data/SCDB_2026_01_justiceCentered_Docket.csv": "212615bf92c77ee478e87d3f52a5a989b03c8ecca43bfeb0e21b38d53550c1f8",
+  "/Users/olgavlasova/scotus-predict-rerun/katz/results/K10/preds.csv.gz": "c9b1f6a5412dc7c354419ac1594c1af23620f207e7f8af7acd6b21b0dd09cac4",
+  "/Users/olgavlasova/scotus-predict-rerun/katz/kalshi_hist/kalshi_settled_prices.csv": "e2c29cd948d0f1205c7aed33b793ac630dc30e8c4934cb3be4829a53df28a198",
+  "/Users/olgavlasova/scotus-predict-rerun/katz/kalshi_hist/market_map_hist.csv": "ab7c44c75e988ded1caa9f4435ae370d4f4c29d06288d15972d35ec588ee478f",
+  "katz/claude/results_local/P_wf_all.csv.gz": "60eef96b975cccc03279c58e7bacfabc8cdc2395660939f4fb31522176d82436"
+ },
+ "n_primary_1990_2014": 2250,
+ "n_holdout_expected": {
+  "primary_argued_partyWinning": 772,
+  "secondary_all_reverse": 800
+ },
+ "label_primary": "partyWinning (argued cases)",
+ "dry_run": false,
+ "overrides": {},
+ "holdout": "not read by this script (2015+ outcomes masked)"
+}

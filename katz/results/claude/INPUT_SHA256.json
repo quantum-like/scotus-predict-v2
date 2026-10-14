@@ -1,0 +1,14 @@
+{
+ "katz/claude/results_local/KC1/preds.csv.gz": "a0d138189243898af5791696c9c201f8d7c4fb3f3c53ea21f998beb683bf25c0",
+ "katz/claude/results_local/KC1/run_meta.json": "b7f540fba1810230c40ed0f6e718a8e5e1589c14a9eca0728bf2cff71b47b345",
+ "katz/claude/results_local/KC1/features.json": "0b73b32cff4ea882bd9a47ca9aef5d35ffba41612082d74383b9828a4df32800",
+ "katz/claude/features/pit_theta.csv": "08e2b1f6f8fc110b2f92c9587e0804c97ebf8e8a864fd43763622c365446c74c",
+ "katz/claude/features/lc_ideology.csv": "706aff6c2611163c048790fa68a0019d27f805b4b3b658721bfec7a880e10b92",
+ "katz/claude/features/cert_docket.csv": "50c2eb08d9ff21ab64a12f08d9e0ccbcf408399b0800631c3e3f08e284d92d48",
+ "katz/claude/features/qp_split.csv": "b6bfac71afca2412b96fc458b36673d1787a961b10f7a205f027086a1eb01e0b",
+ "/Users/olgavlasova/scotus-predict-rerun/data/SCDB_2026_01_justiceCentered_Docket.csv": "212615bf92c77ee478e87d3f52a5a989b03c8ecca43bfeb0e21b38d53550c1f8",
+ "/Users/olgavlasova/scotus-predict-rerun/katz/results/K10/preds.csv.gz": "c9b1f6a5412dc7c354419ac1594c1af23620f207e7f8af7acd6b21b0dd09cac4",
+ "/Users/olgavlasova/scotus-predict-rerun/katz/kalshi_hist/kalshi_settled_prices.csv": "e2c29cd948d0f1205c7aed33b793ac630dc30e8c4934cb3be4829a53df28a198",
+ "/Users/olgavlasova/scotus-predict-rerun/katz/kalshi_hist/market_map_hist.csv": "ab7c44c75e988ded1caa9f4435ae370d4f4c29d06288d15972d35ec588ee478f",
+ "katz/claude/results_local/P_wf_all.csv.gz": "60eef96b975cccc03279c58e7bacfabc8cdc2395660939f4fb31522176d82436"
+}

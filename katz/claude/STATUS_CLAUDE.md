@@ -1,1 +1,3 @@
 - 2026-10-13 19:55 PDT queue started; waiting for job_k16.sh (K18, K19) and other katz jobs
+- 2026-10-13 20:35 PDT KC1 started (CPU RF n_jobs=-1, nice 5)
+- 2026-10-13 21:11 PDT KC1 exit 0
