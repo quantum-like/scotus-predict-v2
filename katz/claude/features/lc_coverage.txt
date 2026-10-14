@@ -1,0 +1,130 @@
+fjc_lc_ideology.py run 2026-10-13 17:31:39  ->  features/lc_ideology.csv (5215 rows, sha256 706aff6c2611163c048790fa68a0019d27f805b4b3b658721bfec7a880e10b92)
+judges.csv sha256 99a17f0c970daa74d91f29cfe47a61287f58a103d4e62be6084d81f9f89ad48c (= spec); 4077 judges, 4777 appointments (slots 1-6), 878 court-of-appeals appointments
+cert_docket.csv: present: 2105 rows, sha256 50c2eb08d9ff21ab64a12f08d9e0ccbcf408399b0800631c3e3f08e284d92d48, key column 'docket', non-empty lc_decision_date 1883, unparseable 0; docket dates used 1885, rejected by the plausibility window 0
+
+== FJC court names matched (caseSource -> FJC Court Name: appointments total / party D,R,other: raw FJC field -> after C2)
+   21 U.S. Court of Appeals for the First Circuit: 37 / 20,16,1 -> 20,16,1
+   22 U.S. Court of Appeals for the Second Circuit: 83 / 34,46,3 -> 34,47,2
+   23 U.S. Court of Appeals for the Third Circuit: 77 / 37,39,1 -> 37,39,1
+   24 U.S. Court of Appeals for the Fourth Circuit: 57 / 27,28,2 -> 27,29,1
+   25 U.S. Court of Appeals for the Fifth Circuit: 91 / 47,43,1 -> 47,43,1
+   26 U.S. Court of Appeals for the Sixth Circuit: 82 / 31,49,2 -> 31,50,1
+   27 U.S. Court of Appeals for the Seventh Circuit: 66 / 29,36,1 -> 29,36,1
+   28 U.S. Court of Appeals for the Eighth Circuit: 65 / 20,44,1 -> 20,44,1
+   29 U.S. Court of Appeals for the Ninth Circuit: 119 / 59,59,1 -> 59,59,1
+   30 U.S. Court of Appeals for the Tenth Circuit: 47 / 23,22,2 -> 23,24,0
+   31 U.S. Court of Appeals for the Eleventh Circuit: 42 / 11,13,18 -> 23,19,0
+   32 U.S. Court of Appeals for the District of Columbia Circuit: 72 / 39,32,1 -> 40,32,0
+    8 U.S. Court of Appeals for the Federal Circuit: 40 / 13,12,15 -> 22,18,0
+  appellate Court Names in FJC not mapped: none
+  date fields (empty, unparseable): com (1, 0), sen (425, 0), ter (302, 0)
+  C2 party inherited on 39 appointments; 33 commissioned >= 1980 (Eleventh 18, Federal 15; 21,12,0 D,R,other); raw FJC 'other' commissioned >= 1980 not resolved: 0
+    Eleventh: Anderson D, Clark D, Dyer D, Fay R, Godbold D, Hatchett D, Henderson D, Hill R, Johnson D, Jones R, Kravitch D, Morgan D, Rives D, Roney R, Simpson D, Tjoflat R, Tuttle R, Vance D; Federal: Almond D, Baldwin D, Bennett R, Cowen D, Davis D, Friedman D, Kashiwa R, Laramore R, Markey R, Miller R, Nichols D, Nies D, Rich R, Skelton D, Smith D
+  still 'other' after C2 (all CoA appointments): Bond (Fourth, None (assignment), commission 1891-06-16, end 1893-10-24), Jackson (Sixth, None (assignment), commission 1891-06-16, end 1893-03-04), Lacombe (Second, None (assignment), commission 1891-06-16, end 1916-02-15), Pardee (Fifth, None (assignment), commission 1891-06-16, end 1919-09-26), Sawyer (Ninth, None (assignment), commission 1891-06-16, end 1891-09-07), Acheson (Third, None (assignment), commission 1891-06-16, end 1906-06-21), Colt (First, None (assignment), commission 1891-06-16, end 1913-02-07), Gresham (Seventh, None (assignment), commission 1891-06-16, end 1893-03-03), Wallace (Second, None (assignment), commission 1891-06-16, end 1907-05-08), Caldwell (Eighth, None (assignment), commission 1891-06-16, end 1903-06-04)
+  C3b senior date inherited on 10 reassignment rows: Almond (Federal, senior 1973-03-01), Cowen (Federal, senior 1977-03-01), Jones (Eleventh, senior 1966-02-17), Laramore (Federal, senior 1972-01-17), Rives (Eleventh, senior 1966-02-15), Skelton (Federal, senior 1977-05-01), Tuttle (Eleventh, senior 1968-06-01), Dyer (Eleventh, senior 1976-09-30), Morgan (Eleventh, senior 1978-09-01), Simpson (Eleventh, senior 1975-06-30)
+
+== Rows
+court of appeals      3950
+other source          1103
+caseSource missing     162
+date_source         docket  proxy
+row_0                            
+caseSource missing       2    160
+court of appeals      1583   2367
+other source           300    803
+court-of-appeals rows with n_dem+n_rep < 3: 0; with n_other > 0: 0 (asserted 0, so dshare = n_dem/n_active on every lc_have row)
+  CoA rows with lc_have = 0 by court: none
+
+== By term: rows, CoA rows, docket dates, lc_have, lc_have rate (all rows / CoA rows), mean & sd dshare (lc_have rows)
+      rows  coa  docket_date  lc_have  rate_all  rate_coa  mean_dshare  sd_dshare
+term                                                                             
+1980   177  111            0      111     0.627       1.0         0.56      0.125
+1981   207  142            0      142     0.686       1.0         0.59      0.132
+1982   200  148            0      148     0.740       1.0        0.649      0.107
+1983   196  146            0      146     0.745       1.0        0.576      0.135
+1984   186  139            0      139     0.747       1.0        0.555      0.161
+1985   182  125            0      125     0.687       1.0        0.539      0.131
+1986   182  124            0      124     0.681       1.0        0.497      0.139
+1987   168  120            0      120     0.714       1.0        0.441      0.088
+1988   177  118            0      118     0.667       1.0        0.391       0.12
+1989   154  106            0      106     0.688       1.0        0.387      0.105
+1990   140   98            0       98     0.700       1.0        0.376      0.108
+1991   149   98            0       98     0.658       1.0        0.323      0.118
+1992   125  102            0      102     0.816       1.0        0.324       0.12
+1993   125   69            0       69     0.552       1.0        0.278      0.129
+1994   101   78            0       78     0.772       1.0        0.269      0.124
+1995   107   80            0       80     0.748       1.0        0.293      0.126
+1996   106   79            0       79     0.745       1.0        0.349      0.067
+1997   108   90            0       90     0.833       1.0        0.336      0.094
+1998   108   77            0       77     0.713       1.0        0.378      0.112
+1999    92   68            0       68     0.739       1.0        0.427      0.127
+2000    94   71            0       71     0.755       1.0        0.486      0.165
+2001    97   86            0       86     0.887       1.0        0.519       0.16
+2002    92   64            3       64     0.696       1.0        0.606      0.162
+2003    95   73           95       73     0.768       1.0        0.539      0.171
+2004    91   76           88       76     0.835       1.0        0.468      0.144
+2005   100   74           98       74     0.740       1.0        0.472      0.138
+2006    84   73           83       73     0.869       1.0        0.457      0.167
+2007    81   64           79       64     0.790       1.0         0.41      0.142
+2008    94   75           90       75     0.798       1.0        0.459      0.126
+2009    96   82           93       82     0.854       1.0        0.421      0.133
+2010    94   83           90       83     0.883       1.0        0.431      0.142
+2011    89   73           89       73     0.820       1.0        0.487      0.124
+2012    82   69           82       69     0.841       1.0        0.501      0.133
+2013    85   76           85       76     0.894       1.0        0.459      0.137
+2014    83   73           80       73     0.880       1.0        0.498      0.158
+2015    95   69           94       69     0.726       1.0        0.548      0.159
+2016    76   55           76       55     0.724       1.0        0.571      0.159
+2017    80   61           77       61     0.762       1.0         0.56       0.18
+2018    76   61           75       61     0.803       1.0        0.572      0.196
+2019    78   65           76       65     0.833       1.0        0.559      0.143
+2020    80   70           78       70     0.875       1.0        0.488      0.173
+2021    72   65           65       65     0.903       1.0        0.451      0.172
+2022    69   57           59       57     0.826       1.0        0.463      0.177
+2023    69   63           64       63     0.913       1.0         0.46      0.186
+2024    74   69           71       69     0.932       1.0        0.479      0.172
+2025    73   62           69       62     0.849       1.0        0.493      0.146
+2026    26   23           26       23     0.885       1.0        0.475      0.146
+
+all terms: lc_have 3950/5215 = 0.757 of all rows, 1.000 of CoA rows; 1990-2014: 0.775 / 1.000; pending 2026: 23/26 (CoA 23)
+dshare over lc_have rows: count    3950.000; mean        0.470; std         0.167; min         0.000; 25%         0.333; 50%         0.455; 75%         0.615; max         1.000
+
+== Circuit composition at Oct 1 of selected years, from FJC after C2/C3b: dshare (n_dem/n_rep/n_other); '-' = n_dem+n_rep < 3
+y                  1981           1985            1990           1995           1997           2000           2005            2009            2010           2015            2020            2025
+court                                                                                                                                                                                            
+First      0.75 (3/1/0)   0.60 (3/2/0)    0.17 (1/5/0)   0.17 (1/5/0)   0.20 (1/4/0)   0.33 (2/4/0)   0.33 (2/4/0)    0.40 (2/3/0)    0.50 (3/3/0)   0.67 (4/2/0)    0.67 (4/2/0)    1.00 (5/0/0)
+Second     0.57 (4/3/0)   0.36 (4/7/0)    0.25 (3/9/0)   0.46 (6/7/0)   0.56 (5/4/0)  0.83 (10/2/0)   0.54 (7/6/0)    0.40 (4/6/0)    0.50 (5/5/0)   0.62 (8/5/0)    0.46 (6/7/0)    0.54 (7/6/0)
+Third      0.44 (4/5/0)   0.33 (4/8/0)    0.18 (2/9/0)  0.21 (3/11/0)  0.23 (3/10/0)   0.50 (6/6/0)   0.50 (6/6/0)    0.50 (6/6/0)    0.57 (8/6/0)   0.58 (7/5/0)    0.43 (6/8/0)    0.46 (6/7/0)
+Fourth     0.60 (6/4/0)   0.45 (5/6/0)    0.36 (4/7/0)   0.31 (4/9/0)   0.31 (4/9/0)   0.40 (4/6/0)   0.38 (5/8/0)    0.50 (5/5/0)    0.62 (8/5/0)  0.67 (10/5/0)    0.60 (9/6/0)    0.60 (9/6/0)
+Fifth      0.75 (9/3/0)   0.47 (7/8/0)   0.21 (3/11/0)  0.31 (5/11/0)  0.38 (6/10/0)   0.36 (5/9/0)  0.25 (4/12/0)   0.25 (4/12/0)   0.27 (4/11/0)  0.33 (5/10/0)   0.29 (5/12/0)   0.29 (5/12/0)
+Sixth      0.70 (7/3/0)   0.45 (5/6/0)    0.36 (5/9/0)   0.38 (5/8/0)   0.50 (7/7/0)   0.58 (7/5/0)   0.43 (6/8/0)   0.33 (5/10/0)   0.38 (6/10/0)  0.33 (5/10/0)   0.31 (5/11/0)   0.38 (6/10/0)
+Seventh    0.33 (2/4/0)   0.20 (2/8/0)    0.18 (2/9/0)   0.27 (3/8/0)   0.27 (3/8/0)   0.27 (3/8/0)   0.27 (3/8/0)    0.30 (3/7/0)    0.30 (3/7/0)   0.33 (3/6/0)    0.18 (2/9/0)    0.50 (5/5/0)
+Eighth     0.62 (5/3/0)   0.44 (4/5/0)    0.33 (3/6/0)   0.27 (3/8/0)   0.30 (3/7/0)   0.40 (4/6/0)   0.18 (2/9/0)    0.18 (2/9/0)    0.18 (2/9/0)   0.20 (2/8/0)   0.09 (1/10/0)   0.09 (1/10/0)
+Ninth     0.70 (16/7/0)  0.64 (16/9/0)  0.48 (13/14/0)  0.38 (9/15/0)   0.50 (9/9/0)  0.72 (18/7/0)  0.67 (16/8/0)  0.59 (16/11/0)  0.60 (15/10/0)  0.69 (20/9/0)  0.55 (16/13/0)  0.55 (16/13/0)
+Tenth      0.62 (5/3/0)   0.67 (4/2/0)    0.40 (4/6/0)   0.42 (5/7/0)   0.42 (5/7/0)   0.50 (5/5/0)   0.42 (5/7/0)    0.36 (4/7/0)    0.30 (3/7/0)   0.58 (7/5/0)    0.58 (7/5/0)    0.58 (7/5/0)
+Eleventh   0.67 (8/4/0)   0.67 (8/4/0)    0.45 (5/6/0)   0.36 (4/7/0)   0.36 (4/7/0)   0.42 (5/7/0)   0.42 (5/7/0)    0.36 (4/7/0)    0.45 (5/6/0)   0.73 (8/3/0)    0.42 (5/7/0)    0.42 (5/7/0)
+DC         0.70 (7/3/0)   0.67 (6/3/0)    0.33 (4/8/0)   0.36 (4/7/0)   0.45 (5/6/0)   0.40 (4/6/0)   0.40 (4/6/0)    0.33 (3/6/0)    0.33 (3/6/0)   0.64 (7/4/0)    0.64 (7/4/0)    0.64 (7/4/0)
+Federal               -   0.45 (5/6/0)   0.09 (1/10/0)  0.17 (2/10/0)  0.17 (2/10/0)   0.33 (4/8/0)   0.33 (4/8/0)    0.33 (4/8/0)    0.44 (4/5/0)   0.67 (8/4/0)    0.67 (8/4/0)    0.67 (8/4/0)
+
+== Sanity (Oct 1 of each year; FJC only)
+  Ninth dshare at Oct 1, 1990-2025: 90:0.48 91:0.46 92:0.46 93:0.44 94:0.42 95:0.38 96:0.41 97:0.50 98:0.59 99:0.62 00:0.72 01:0.72 02:0.71 03:0.63 04:0.64 05:0.67 06:0.62 07:0.59 08:0.59 09:0.59 10:0.60 11:0.64 12:0.68 13:0.67 14:0.69 15:0.69 16:0.68 17:0.72 18:0.73 19:0.57 20:0.55 21:0.55 22:0.55 23:0.54 24:0.55 25:0.55
+  Fifth dshare at Oct 1, 1990-2025: 90:0.21 91:0.15 92:0.15 93:0.15 94:0.31 95:0.31 96:0.35 97:0.38 98:0.38 99:0.36 00:0.36 01:0.36 02:0.33 03:0.27 04:0.25 05:0.25 06:0.27 07:0.29 08:0.24 09:0.25 10:0.27 11:0.31 12:0.33 13:0.33 14:0.33 15:0.33 16:0.33 17:0.36 18:0.31 19:0.31 20:0.29 21:0.29 22:0.25 23:0.25 24:0.29 25:0.29
+  Eleventh dshare at Oct 1, 1981-2000: 81:0.67 82:0.67 83:0.67 84:0.67 85:0.67 86:0.58 87:0.58 88:0.50 89:0.55 90:0.45 91:0.40 92:0.27 93:0.27 94:0.36 95:0.36 96:0.36 97:0.36 98:0.42 99:0.42 00:0.42
+  Federal dshare at Oct 1, 1982-2000: 82:0.55 83:0.50 84:0.42 85:0.45 86:0.50 87:0.40 88:0.30 89:0.22 90:0.09 91:0.10 92:0.09 93:0.09 94:0.17 95:0.17 96:0.09 97:0.17 98:0.18 99:0.20 00:0.33
+  Ninth > 0.5 in 12/12 years 1998-2009 and 0/2 of 1996-97 (1994-97: Clinton vacancies unfilled, near-even court; see 1996 list below); Fifth < 0.5 in 26/26 years 2000-2025
+  max n_active over rows vs authorized judgeships today (28 USC 44): First 6/6, Second 14/13, Third 14/14, Fourth 15/15, Fifth 25/17, Sixth 16/16, Seventh 11/11, Eighth 11/11, Ninth 29/29, Tenth 12/12, Eleventh 12/12, DC 12/11, Federal 12/12
+  n_active over CoA rows: count    3950.0; mean       14.5; std         6.2; min         3.0; 25%        11.0; 50%        12.0; 75%        16.0; max        29.0
+
+== Spot checks (active judges from the raw FJC rows: last name, party of appointing president (* = inherited under C2), commission date)
+  Ninth at 1996-10-01: Browning D 1961, Hug D 1977, Schroeder D 1979, Fletcher D 1979, Pregerson D 1979, Reinhardt D 1980, Hall R 1984, Wiggins R 1984, Brunetti R 1985, Kozinski R 1985, Thompson R 1985, Noonan R 1985, O'Scannlain R 1986, Leavy R 1987, Trott R 1988, Rymer R 1989, Fernandez R 1989, Nelson R 1990, Kleinfeld R 1991, Hawkins D 1994, Thomas D 1996, Tashima D 1996
+  Ninth at 2000-10-01: Hug D 1977, Schroeder D 1979, Pregerson D 1979, Reinhardt D 1980, Kozinski R 1985, O'Scannlain R 1986, Trott R 1988, Rymer R 1989, Fernandez R 1989, Nelson R 1990, Kleinfeld R 1991, Hawkins D 1994, Thomas D 1996, Tashima D 1996, Silverman D 1998, Graber D 1998, McKeown D 1998, Wardlaw D 1998, Fletcher D 1998, Fisher D 1999, Gould D 1999, Paez D 2000, Berzon D 2000, Tallman D 2000, Rawlinson D 2000
+  Fifth at 2015-10-01: Jolly R 1982, Davis R 1983, Jones R 1985, Smith R 1987, Stewart D 1994, Dennis D 1995, Clement R 2001, Prado R 2003, Richman R 2005, Elrod R 2007, Southwick R 2007, Haynes R 2008, Graves D 2011, Higginson D 2011, Costa D 2014
+  Eleventh at 1990-10-01: Anderson D* 1981, Clark D* 1981, Hatchett D* 1981, Kravitch D* 1981, Fay R* 1981, Johnson D* 1981, Tjoflat R* 1981, Edmondson R 1986, Cox R 1988, Birch R 1990, Dubina R 1990
+  Federal at 1990-10-01: Markey R* 1982, Nies D* 1982, Rich R* 1982, Newman R 1984, Archer R 1985, Mayer R 1987, Michel R 1988, Plager R 1989, Lourie R 1990, Clevenger R 1990, Rader R 1990
+  pending 24-1016 (Second, d 2024-12-19 docket): n_dem 7 n_rep 6 n_other 0 dshare 0.538462
+  pending 25-1003 (Fifth, d 2025-07-23 docket): n_dem 5 n_rep 12 n_other 0 dshare 0.294118
+  pending 25-1017 (Ninth, d 2025-02-25 docket): n_dem 16 n_rep 13 n_other 0 dshare 0.551724
+
+== Diagnostic only (NOT in the CSV): previous rule, raw FJC party ('None (reassignment)' = other, excluded from the share)
+  rows where the raw rule has n_other > 0: 283 (terms 1990-2014: 171); lc_have now 283 vs raw rule 203; |dshare now - raw rule| where both exist: mean 0.121, max 0.500, > 0.2 in 53 rows
+  by court and term (rows, mean dshare raw rule -> now): Eleventh 1982: 1, nan -> 0.67; Eleventh 1983: 10, nan -> 0.67; Eleventh 1984: 10, nan -> 0.67; Eleventh 1985: 6, nan -> 0.67; Eleventh 1986: 12, nan -> 0.67; Eleventh 1987: 5, nan -> 0.58; Eleventh 1988: 10, nan -> 0.58; Eleventh 1989: 6, nan -> 0.50; Eleventh 1990: 7, nan -> 0.55; Eleventh 1991: 10, 0.00 -> 0.45; Eleventh 1992: 11, 0.00 -> 0.40; Eleventh 1993: 6, 0.00 -> 0.27; Eleventh 1994: 3, 0.00 -> 0.27; Eleventh 1995: 7, 0.14 -> 0.36; Eleventh 1996: 6, 0.14 -> 0.36; Eleventh 1997: 3, 0.14 -> 0.36; Eleventh 1998: 8, 0.25 -> 0.36; Eleventh 1999: 6, 0.33 -> 0.42; Eleventh 2000: 3, 0.40 -> 0.42; Eleventh 2001: 6, 0.40 -> 0.42; Eleventh 2002: 4, 0.44 -> 0.45; Eleventh 2003: 4, 0.44 -> 0.45; Eleventh 2004: 11, 0.44 -> 0.45; Eleventh 2005: 7, 0.44 -> 0.45; Eleventh 2006: 5, 0.40 -> 0.42; Eleventh 2007: 6, 0.40 -> 0.42; Eleventh 2008: 3, 0.40 -> 0.42; Eleventh 2009: 10, 0.40 -> 0.40; Eleventh 2010: 3, 0.44 -> 0.40; Eleventh 2011: 6, 0.50 -> 0.46; Eleventh 2012: 6, 0.56 -> 0.51; Eleventh 2013: 4, 0.62 -> 0.56; Eleventh 2014: 6, 0.68 -> 0.61; Eleventh 2015: 3, 0.77 -> 0.69; Eleventh 2016: 7, 0.80 -> 0.73; Eleventh 2017: 6, 0.79 -> 0.72; Eleventh 2018: 7, 0.74 -> 0.68; Eleventh 2019: 7, 0.57 -> 0.52; Eleventh 2020: 2, 0.55 -> 0.50; Federal 1983: 1, nan -> 0.55; Federal 1984: 2, nan -> 0.50; Federal 1985: 5, nan -> 0.42; Federal 1986: 5, nan -> 0.45; Federal 1987: 3, 0.00 -> 0.50; Federal 1989: 4, 0.00 -> 0.30; Federal 1991: 1, 0.00 -> 0.09; Federal 1992: 2, 0.00 -> 0.10; Federal 1993: 1, 0.00 -> 0.09; Federal 1994: 3, 0.00 -> 0.09; Federal 1995: 4, 0.10 -> 0.17; Federal 1996: 1, 0.10 -> 0.17; Federal 1997: 2, 0.10 -> 0.09; Federal 1998: 4, 0.18 -> 0.17; Federal 1999: 2, 0.20 -> 0.18

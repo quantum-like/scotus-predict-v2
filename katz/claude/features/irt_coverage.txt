@@ -1,0 +1,33 @@
+pit_irt.py coverage (2026-10-12 16:34); torch 2.14.1; device mps; args {'tmin': 1960, 'tmax': 1962, 'out': '/Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2/katz/claude/features/pit_theta_SMOKE.csv', 'mq_out': None, 'cov': '/Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2/katz/claude/features/irt_coverage.txt', 'root': '/Users/olgavlasova/scotus-predict-rerun', 'timing': False, 'selftest': False}
+SCDB 2026_01 rows 97918 -> 97918 unique (docketId, justice); direction 1/2 rows 92257, other/missing 5661 dropped; dockets with a kept vote 10628, unanimous dropped 4232, kept 6396; kept votes 55808
+model: lr 0.05, steps 3000, priors a N(0,25.0), b N(0,6.25), theta_first N(0,1.0), rw var 0.1; float32; seed 0
+outputs: /Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2/katz/claude/features/pit_theta_SMOKE.csv
+         /Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2/katz/claude/features/pit_mq_check_SMOKE.csv
+total runtime 12.6 s; fits 3; mean 3.9 s/fit
+
+PER FIT (votes/dockets in the window; convergence; orientation corr = |corr(theta_last, liberal share)| before any flip)
+   t     terms  embargo_dockets  n_votes  n_dockets  n_justices  n_jt  warm_dockets  warm_jt  loss_per_vote  rel_dloss_last100  max_abs_grad  orient_corr  flipped  sec device  n_sitting  n_imputed  impute_fallback  theta_min  theta_med  theta_max
+1960 1946-1959                0    11023       1280          16   129             0        0         0.3222          6.874e-07        0.1175       0.8604        0  4.1    mps          9          0                0     -3.057    -0.3281      12.16
+1961 1946-1960                0    11888       1378          16   138          1280      129         0.3186         -5.221e-06        0.3164       0.8487        0  3.5    mps         10          1                0     -3.759     0.4717      13.14
+1962 1946-1961                0    12568       1464          17   148          1378      138         0.3143           1.73e-06        0.2556       0.8041        0  4.2    mps          9          1                0     -4.501      1.767      13.79
+
+FEATURE theta_j(t) (one row per sitting justice; imputed rows 2 of 28):
+count    28.000000
+mean      1.969796
+std       5.100308
+min      -4.501395
+25%      -1.731333
+50%       1.047475
+75%       4.142230
+max      13.793959
+
+MQ CHECK (theta_j(t) vs published MQ post_mn at t-1; MQ conservative-positive, so NEGATIVE expected; check only, never a feature)
+ term  mq_term  n  pearson  spearman
+ 1960     1959  9  -0.9935   -1.0000
+ 1961     1960  9  -0.9914   -0.9833
+ 1962     1961  8  -0.9861   -1.0000
+pooled over terms: n 26, pearson -0.9900, spearman -0.9911
+
+SELFTEST (2026-10-12 16:35, device mps, window of t=1960, 11023 votes): analytic vs autograd gradient max|diff|/max|g| = 3.12e-07; 200 steps of the written-out Adam vs torch.optim.Adam: max|param diff| = 7.15e-07 (param scale 4.52)
+
+TIMING (2026-10-12 16:35, device mps): one cold-start fit, window structure of t=2026 (terms 1946-2025, 55808 votes, 6396 dockets, 726 justice-terms) with SYNTHETIC y: 5.3 s for 3000 steps (1.76 ms/step). Upper bound for 47 fits (1980-2026, each <= this size): 4.1 min.

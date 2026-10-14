@@ -1,0 +1,273 @@
+qp_coverage (parse_qp.py) run 2026-10-13 17:34:00  runtime 39s  raw/qp snapshot (fetch still running)
+
+!!! LEAKAGE WARNING for the amendment owner (docstring 6; NOT fixable in this module, whose outputs follow spec B):
+    a QP PDF exists only for cases granted plenary review, so qp_have (and qp_split filled 0 when missing) encodes argued status
+    almost exactly (exceptions: granted, then decided without argument, e.g. 08-1234, 10-72), which rule 1 says is missing
+    information, never a feature value (summary dispositions have no QP). SCDB terms <= 2025, dockets
+    with a fetch_index row (dateArgument read for this count only; no outcome field): argued -> QP PDF 1798/1982, QP row 1789/1982;
+    not argued -> QP PDF 4/161, QP row 4/161. Do not put qp_have in Zc; do not encode missing qp_split as 0
+    (impute the training mean, or fit/score the QP family on granted cases only). Same check is needed for docket_have (parse_dockets.py).
+!!! NOTE_AUDIT: 38 bodies contain Court/Clerk-note vocabulary, CAPS_TAIL: 12 bodies end in all-caps line(s) after mixed-case text; UNREVIEWED (not in AUDIT_OK): 21  01-653 01-657 01-706 01-1209 01-1382 02-361 02-516 04-104 04-105 04-473 04-1324 04-1360 04-1618 04-1704 04-6432 05-998 06-1195 07-610 07-665 07-1223 07-5439
+
+PDF files present: 1828   parsed (rows in qp_split.csv): 1818   extraction failures / no petition QP text: 10
+failures by reason: court_text_only=10
+  court_text_only: 21-588 21-1086 21-1087 22-58 22-535 23-939 24-656 24-657 25-332 26-426
+  (court_text_only = the first line after the QP header is a Court/Clerk note, i.e. the PDF holds only the Court's own text, e.g. questions
+   framed by the Court at grant: no petition QP -> missing, docstring 2)
+fetch_index rows: 2169   qp_status ok: 1828   other (no QP online): 341
+header_fallback (no 'QUESTION(S) PRESENTED' line): 3   no annotation trailer found: 9  01-7662 02-10038 02-1603 02-182 02-361 05-1629 05-493 05-608 05-6551 05-785 05-9222 05-998
+HARD_CUT truncations (note phrase inside a line, after the line cut): 22  02-182 04-104 04-105 04-1360 04-1704 04-473 05-1629 05-493 05-547 05-593 05-608 05-6551 05-669 05-7058 05-7142 05-746 05-785 05-9222 05-998 06-1195 08-205 08-681
+qp_chars: min=40 p10=225 median=758 p90=1619 max=13196
+qp_split overall: 367/1818 = 0.202
+
+by docket-year prefix (filing year): prefix n_parsed n_split rate
+  00 (2000)      1     0  0.000
+  01 (2001)     54    11  0.204
+  02 (2002)     89    11  0.124
+  03 (2003)     80    12  0.150
+  04 (2004)     88    15  0.170
+  05 (2005)     73    18  0.247
+  06 (2006)     83    16  0.193
+  07 (2007)     80    14  0.175
+  08 (2008)     96    17  0.177
+  09 (2009)     76    15  0.197
+  10 (2010)     76    14  0.184
+  11 (2011)     73    11  0.151
+  12 (2012)     91    22  0.242
+  13 (2013)     70    17  0.243
+  14 (2014)     76    13  0.171
+  15 (2015)     74    21  0.284
+  16 (2016)     71    22  0.310
+  17 (2017)     74    13  0.176
+  18 (2018)     74    17  0.230
+  19 (2019)     64     3  0.047
+  20 (2020)     62    12  0.194
+  21 (2021)     59    14  0.237
+  22 (2022)     61    12  0.197
+  23 (2023)     71    19  0.268
+  24 (2024)     63    22  0.349
+  25 (2025)     39     6  0.154
+
+by SCDB term (dockets YY-NNNN, terms >= 2000 incl. pending 2026): term n_dockets n_fetched n_qp_online n_parsed n_split split_rate parsed/dockets | n_argued(dateArgument) n_argued_fetched n_parsed_not_argued
+  2000     91    91     0     0     0    -    0.000 |    85    85     0
+  2001     93    93     0     0     0    -    0.000 |    88    88     0
+  2002     91    91    84    84    15  0.179  0.923 |    84    84     0
+  2003     95    95    79    79     9  0.114  0.832 |    90    90     0
+  2004     89    89    85    85    14  0.165  0.955 |    85    85     0
+  2005     98    98    87    87    14  0.161  0.888 |    87    87     0
+  2006     83    83    78    78    20  0.256  0.940 |    78    78     0
+  2007     79    79    75    75    15  0.200  0.949 |    74    74     1
+  2008     90    90    85    85    13  0.153  0.944 |    85    85     0
+  2009     93    93    81    81    16  0.198  0.871 |    79    79     2
+  2010     90    90    86    86    18  0.209  0.956 |    85    85     1
+  2011     88    88    77    77    14  0.182  0.875 |    77    77     0
+  2012     82    82    77    77    14  0.182  0.939 |    77    77     0
+  2013     85    85    79    79    17  0.215  0.929 |    79    79     0
+  2014     80    80    74    74    15  0.203  0.925 |    74    74     0
+  2015     94    94    82    82    20  0.244  0.872 |    82    82     0
+  2016     76    76    69    69    20  0.290  0.908 |    69    69     0
+  2017     77    77    67    67    17  0.254  0.870 |    67    67     0
+  2018     76    76    71    71    14  0.197  0.934 |    71    71     0
+  2019     78    78    74    74    14  0.189  0.949 |    74    74     0
+  2020     78    78    70    70     7  0.100  0.897 |    70    70     0
+  2021     67    67    65    64    11  0.172  0.955 |    65    65     0
+  2022     63    63    62    58    15  0.259  0.921 |    62    62     0
+  2023     64    64    64    63    11  0.175  0.984 |    64    64     0
+  2024     71    71    68    66    20  0.303  0.930 |    68    68     0
+  2025     72    72    63    62    20  0.323  0.861 |    63    63     0
+  2026     26    26    26    25     4  0.160  0.962 |    22    22     4
+  parsed dockets not in SCDB/pending (term >= 2000): 0
+
+LITERAL_RE diagnostic (only '.' blocks, no abbreviation masking): disagrees with SPLIT_RE on 13 dockets
+  02-722: SPLIT_RE=1 LITERAL_RE=0
+  04-278: SPLIT_RE=1 LITERAL_RE=0
+  05-848: SPLIT_RE=1 LITERAL_RE=0
+  07-552: SPLIT_RE=1 LITERAL_RE=0
+  08-1175: SPLIT_RE=1 LITERAL_RE=0
+  10-844: SPLIT_RE=1 LITERAL_RE=0
+  12-1183: SPLIT_RE=1 LITERAL_RE=0
+  15-1248: SPLIT_RE=1 LITERAL_RE=0
+  18-8369: SPLIT_RE=0 LITERAL_RE=1
+  19-511: SPLIT_RE=1 LITERAL_RE=0
+  20-1800: SPLIT_RE=1 LITERAL_RE=0
+  22-451: SPLIT_RE=1 LITERAL_RE=0
+  24-924: SPLIT_RE=1 LITERAL_RE=0
+
+FP_HINTS among matches (diagnostic regexes on snippet +-60/80 chars; NOT used in the feature): class n dockets
+  preemption: conflict(s) with federal/state law: 7  04-1371 05-409 09-1039 13-271 13-339 14-614 24-1068
+  conflict with this Court / a named case: 22  01-9094 02-337 02-658 02-722 04-368 05-746 06-427 06-937 06-1666 08-294 08-661 08-810 08-1175 10-277 10-844 11-1221 12-142 12-815 15-1248 20-807 20-1800 24-993
+  intra-court division (divided panel / en banc / opinion): 31  02-857 03-724 06-102 07-552 07-1114 09-1036 10-63 10-277 12-1183 13-1496 15-338 15-446 15-1189 15-1406 16-402 16-1011 17-71 17-988 17-1498 18-916 18-1028 20-601 21-86 21-377 21-984 22-200 22-451 23-7809 24-43 24-781 24-983
+  disagreed with district/trial court: 0  
+  state 'circuit court' (singular; trial court): 10  02-524 04-8990 06-989 06-10119 07-588 09-1039 12-71 12-5196 13-1032 20-1800
+  conflict of interest/laws, armed conflict: 0  
+  split decision/verdict/sentence: 0  
+
+NOTE_AUDIT hits in kept bodies (case-insensitive Court/Clerk-note vocabulary; a hit outside AUDIT_OK may be a leaked note: extend TRAILER_RE/HARD_CUT): 49
+  01-653 [UNREVIEWED]: ...that such cancellation is necessary to ensure that licenses are granted to those most likely to use them efficiently for ...
+  01-657 [UNREVIEWED]: ...that such cancellation is necessary to ensure that licenses are granted to those most likely to use them efficiently for ...
+  01-706 [UNREVIEWED]: ...y Lewis v. Brunswick Corp., No.97-288 (October Tenn, 1997), cert. granted, 522 U.S. 978 (1997), cert. dismissed, 523 U.S. 1...
+  01-706 [UNREVIEWED]: ...ed by federal law. In Lewis, the United States submitted an amicus curiae brief stating the federal government's view that ...
+  01-706 [UNREVIEWED]: ...uch claims are not preempted. Lewis, however, settled after oral argument, before any decision was rendered. This case pres...
+  01-1209 [UNREVIEWED]: ...y this conditional cross-petition is whether, if certiorari is granted and the judgment is reversed in No.01-1209, the j...
+  01-1382 [UNREVIEWED]: ...y this conditional cross-petition is whether, if certiorari is granted and the judgment is reversed in No.01-1209, the j...
+  04-6432 [UNREVIEWED]: ...g the circuits has exacerbated since the Court dismissed as improvidently granted Abdur'Rahman v. Bell, 537 U.S. 88 (2002)....
+  07-610 [UNREVIEWED]: ...In Ellis v. Railway Clerks, this Court unanimously “determined that the [Ra...
+  07-665 [UNREVIEWED]: ...then denied the city’s petition for rehearing en banc by an equally divided, 6-6 vote. The questions presented are: 1. Did th...
+  07-5439 [UNREVIEWED]: ...to be prepared to maintain life in case a stay of execution is granted after the lethal injection chemicals are injected...
+  09-1498 [ok: Speedy Trial Act: motion causes a postponement (the QP)]: ...or is instead excluded only if the motion actually causes a postponement, or the expectation of a postponement, of th...
+  09-1498 [ok: Speedy Trial Act: motion causes a postponement (the QP)]: ...ion actually causes a postponement, or the expectation of a postponement, of the trial....
+  10-63 [ok: a court clerk returned mail (case facts)]: ...itioner's lead attorneys of record were returned to a court clerk unopened with "Return to Sender - Left Firm" writ...
+  10-930 [ok: proceedings stayed pending competency (the QP)]: ...icate rationally and the proceedings should be indefinitely stayed pending possible restoration of competency. Based...
+  10-1150 [ok: case history: writ dismissed as improvidently granted (Lab. Corp.)]: ...n years ago it granted certiorari but dismissed the writ as improvidently granted in Laboratory Corp. of America Holdings v...
+  11-10189 [ok: case history: federal proceeding stayed]: ... evidence in Mr. Trevino's life. The federal proceeding was stayed to allow exhaustion, but the Texas Court of Crimi...
+  13-975 [ok: expedited judicial review (statute)]: ...t deployment of telecommunications facilities and to enable expedited judicial review, the Communications Act of 1934, ...
+  13-1174 [ok: the QP itself: action consolidated with other suits]: ...t circumstances is the dismissal of an action that has been consolidated with other suits immediately appealable?...
+  14-723 [ok: cites a Brief for the United States as Amicus Curiae]: ...orsed the minority position. Brief for the United States as Amicus Curiae, Thurber v. Aetna Life Ins. Co., 134 S.Ct. 2723 (...
+  15-1262 [ok: asks the Court to order oral argument]: ...ty and federalism, should the Court order full briefing and oral argument to resolve the split between the court below and ...
+  16-373 [ok: case history: cert. granted / DIG in IndyMac]: ...f Detroit v. IndyMac MBS, Inc., 721 F.3d 95 (2d Cir. 2013), cert. granted sub nom., Pub. Emps.' Ret. Sys. of Miss. v. IndyM...
+  16-373 [ok: case history: cert. granted / DIG in IndyMac]: ...dyMac MBS, Inc., 134 S. Ct. 1515 (2014), cert. dismissed as improvidently granted , 135 S. Ct. 42 (2014). Here, the court o...
+  17-7505 [ok: case history: execution stayed, expedited motion]: ...ng). With this Court's opinion in hand, the State sought an expedited execution date, and Mr. Madison's execution was s...
+  17-7505 [ok: case history: execution stayed, expedited motion]: ...ide of the AEDPA context," requesting that his execution be stayed and certiorari be granted to address the followin...
+  17-7505 [ok: case history: execution stayed, expedited motion]: ...ion, execute him . . . ."). 2. See, e.g. State of Alabama's Expedited Motion to Set an Execution Date at 2, Ex parte Ma...
+  17-9572 [ok: allotted strikes]: ...ing the first two trials, and he used all twenty-six of his allotted strikes against African Americans at the third an...
+  18-587 [ok: this Court affirmed by an equally divided Court (2016)]: ...ldhood Arrivals (DACA). In 2016, this Court affirmed, by an equally divided Court, a decision of the Fifth Circuit holding th...
+  18-588 [ok: same as 18-587]: ...ldhood Arrivals (DACA). In 2016, this Court affirmed, by an equally divided Court, a decision of the Fifth Circuit holding th...
+  18-589 [ok: same as 18-587]: ...ldhood Arrivals (DACA). In 2016, this Court affirmed, by an equally divided Court, a decision of the Fifth Circuit holding th...
+  19-161 [ok: expedited removal]: ...fter illegally crossing the U.S. border and was placed into expedited removal proceedings. See 8 U.S.C. 1225(b)(l). An ...
+  19-161 [ok: expedited removal]: ...gration judge reached the same conclusions and respondent's expedited-removal order became final. Respondent then filed...
+  19-161 [ok: expedited removal]: ... because it did not raise the kinds of habeas challenges to expedited-removal orders that are permitted under 8 U.S.C. ...
+  20-1531 [ok: this Court stayed that rule (2016)]: ...back while subsidizing renewable energy sources. This Court stayed that rule even before any lower court had reviewe...
+  21-376 [ok: en banc CA5 equally divided]: ...laintiffs' challenges, but affirmed, in some respects by an equally divided vote, the judgment declaring the foregoing provis...
+  21-377 [ok: en banc CA5 equally divided]: ...ral ICWA provisions. The en banc court also affirmed, by an equally divided court, the district court's judgment invalidating...
+  21-377 [ok: en banc CA5 equally divided]: ...a)-as impermissibly commandeering States (including via its equally divided affirmance)? 2. Did the en banc Fifth Circuit err...
+  21-377 [ok: en banc CA5 equally divided]: ...? 3. Did the en banc Fifth Circuit err by affirming (via an equally divided court) the district court's judgment invalidating...
+  21-401 [ok: Servotronics removed from the argument calendar (petition's own account)]: ...ented in Servotronics, Inc. v. Rolls-Royce PLC, No. 20-794 (oral argument originally scheduled for Oct. 5, 2021; case remov...
+  21-401 [ok: Servotronics removed from the argument calendar (petition's own account)]: ...nt originally scheduled for Oct. 5, 2021; case removed from oral argument calendar Sept. 8, 2021): Whether 28 U.S.C. § 1782...
+  21-432 [ok: an equally divided Federal Circuit]: ...erans Affairs, 498 U.S. 89, 95-96 (1990). Despite this, an "equally divided" Federal Circuit held 6-6 that military veterans ...
+  21-463 [ok: clerks and judges of state courts]: ...ts-brought suit in federal court against, among others, the clerks and judges of the courts where enforcement actio...
+  21-518 [ok: prior case dismissed before oral argument]: ...s dismissed upon the parties' Rule 46 motion shortly before oral argument had been scheduled to occur. This petition likewi...
+  22-674 [ok: postponement (statutory text)]: ...e of the "new time and place" "in the case of any change or postponement in the time and place of such pro-ceedings."...
+  22-1219 [ok: Loper Bright cert. granted (petition footnote)]: ...al. v. Raimondo, Secretary of Commerce, et al., No. 22-451, certiorari granted (May 1, 2023) concerning the same statute and reg...
+  22-7386 [ok: Transcript of Oral Argument citation]: ...rce Clause. Taylor v. United States, 14-6166 (Transcript of Oral Argument, Feb, 23, 2016) at 23-24. Despite this concession...
+  23-719 [ok: state supreme court stayed its decision]: ...nt any write-in votes cast for him. The state supreme court stayed its decision pending United States Supreme Court ...
+  24-110 [ok: QP 5: unnecessarily expediting the proceedings]: ...f the Governor. After an extraordinarily - and improperly - expedited trial, the divided three-judge district court dis...
+  24-275 [ok: reopening is granted (statutory question)]: ... appeal period is reopened becomes effective once reopening is granted. The Question Presented is whether a litigant who...
+  CAPS_TAIL 02-361 [UNREVIEWED]: PROB. JURIS. NOTED: 11/12/02
+  CAPS_TAIL 02-516 [UNREVIEWED]: CERT. BEFORE JUDGMENT GRANTED: 12/2/02
+  CAPS_TAIL 04-104 [UNREVIEWED]: CERTIORARI BEFORE JUDGMENT GRANTED. CONSOLIDATED WITH 04-105 | FOR 2 HOURS ORAL ARGUMENT. EXPEDITED BRIEFING SCHEDULE.
+  CAPS_TAIL 04-105 [UNREVIEWED]: CERTIORARI BEFORE JUDGMENT GRANTED. CONSOLIDATED WITH 04-104 | FOR 2 HOURS ORAL ARGUMENT. EXPEDITED BRIEFING SCHEDULE.
+  CAPS_TAIL 04-473 [UNREVIEWED]: 473.pdf ORDER OF 2/17/06: THIS CASE IS RESTORED TO THE CALENDAR | FOR REARGUMENT.
+  CAPS_TAIL 04-1324 [UNREVIEWED]: FORMERLY DAY v. CROSBY
+  CAPS_TAIL 04-1360 [UNREVIEWED]: 1360.pdf ORDER OF 04/19/2006: THIS CASE IS RESTORED TO THE | CALENDAR FOR REARGUMENT.
+  CAPS_TAIL 04-1618 [UNREVIEWED]: 10/17/05 THE ORDER GRANTING THE PETITION FOR A WRIT OF CERTIORARI
+  CAPS_TAIL 04-1704 [UNREVIEWED]: 1724 FOR ONE HOUR ORAL ARGUMENT.
+  CAPS_TAIL 05-998 [UNREVIEWED]: Cert. Granted 4/17/2006 | ORDERED 10/13/2006: THE PARTIES ARE DIRECTED TO FILE | SUPPLEMENTAL BRIEFS ADDRESSING THE FOLLOWING QUESTION: "DID | THE INDICTMENT OMIT AN ALLEGATION THAT WAS REQUIRED BY TH
+  CAPS_TAIL 06-1195 [UNREVIEWED]: THE PETITIONS FOR REHEARING ARE GRANTED. THE ORDERS ENTERED | APRIL 2, 2007, DENYING THE PETITIONS FOR WRITS OF CERTIORARI ARE | VACATED. THE PETITIONS FOR WRITS OF CERTIORARI ARE GRANTED.
+  CAPS_TAIL 07-1223 [UNREVIEWED]: LIMTED TO QUESTION 1 PRESENTED BY THE PETITION
+  AUDIT_OK dockets without a hit now (stale entries): none
+
+15 matched snippets (sha1(docket) order) [context: 60 chars before / 80 after, match in <<>>]
+  10-1018: ... 301 (6th Cir. 1997). Contravening Richardson and expressly <<disagreeing with Cullinan, the Ninth Circuit>> in this case denied qualified immunity to a "private" lawyer retained by the go...  FP_HINT: -
+  12-25: ...is case presents an opportunity for this Court to resolve a <<conflict among the circuits>> and even state courts as to the circumstances under which the litigation except...  FP_HINT: -
+  01-9094: ...a result. The Questions Presented are: 1. Whether the Sixth <<Circuit erred in holding, in square conflict>> with decisions of this Court and of other circuits, that every Rule 60(b) Motio...  FP_HINT: conflict with this Court / a named case
+  11-9307: ...d in the defendant's favor while his appeal is pending. The <<courts of appeals have split>> 5 to 3 on the question that Johnson left open. That question, which this case s...  FP_HINT: -
+  06-84: ...finding of “reckless disregard” for FCRA’s requirements, in <<conflict with the unanimous holdings of other circuits>> that “willfulness” requires actual knowledge that the defendant’s conduct viola...  FP_HINT: -
+  22-1218: ...to mandate a stay." The panel candidly acknowledged the 6-4 <<circuit conflict>>, and a two-judge concurrence emphasized "the courts of appeals are divided," as...  FP_HINT: -
+  16-5294: ...tion, and presentation of the defense.” However, there is a <<division among the circuits>> with regard to this holding, which affects the type of expert assistance indige...  FP_HINT: -
+  05-593: ... time of the incident out of which the claim arose." As the <<court of appeals expressly acknowledged, this case presents two questions "that have split>> the circuits" for more than a decade, namely: 1. Whether the Westfall Act autho...  FP_HINT: -
+  03-1160: ...ld this Court grant certiorari to resolve the five-to-three <<circuit conflict>> over whether disparate impact claims are cognizable under the Age Discriminatio...  FP_HINT: -
+  02-1348: ...negligence were a link in the chain of causation? The Ninth <<Circuit's answer to this question in the affirmative directly conflicts>> with the Third and Eleventh Circuit decisions in Abramson v. Japan Airlines, Co...  FP_HINT: -
+  10-329: ...nce facilities used for interconnection, thereby creating a <<conflict with the Seventh, Eighth, and Ninth Circuits>>. II. Whether the Sixth Circuit erred by disregarding the FCC's interpretation o...  FP_HINT: -
+  18-389: ...en-variety contract claim. In the decision below, the Ninth <<Circuit expressly disagreed>> with the Fifth Circuit and held that state law should be borrowed as federal la...  FP_HINT: -
+  15-577: ...cke v. Davey, 540 U.S. 712 (2004), and deepened an existing <<circuit conflict>>. Three lower courts--two courts of appeals and one state supreme court--interpr...  FP_HINT: -
+  04-1376: ... question presented -- on which there is a well-established <<circuit split>> – is whether and under what circumstances INA § 241 (a)(5) applies to an alien ...  FP_HINT: -
+  22-1165: ...is case presents the following question: Whether the Second <<Circuit erred in holding-in conflict>> with the Third, Ninth, and Eleventh Circuits- that a failure to make a disclosu...  FP_HINT: -
+
+10 non-matched QP openings (sha1(docket) order; first 300 chars of the body)
+  24-557: Whether a trial court abridges the defendant's Sixth Amendment right to counsel by prohibiting the defendant and his counsel from discussing the defendant's testimony during an overnight recess.
+  03-526: FOR REVIEW: In Ring v. Arizona, 536 U.S. 584, 589 (2002), this Court held that the Sixth Amendment jury trial guarantee extends to the determination of any fact, other than a prior conviction, that increases the maximum punishment for first-degree murder from life imprisonment to death. In the insta
+  21-1271: Whether a State's judicial branch may nullify the regulations governing the "Manner of holding Elections for Senators and Representatives . . . prescribed . . . by the Legislature thereof," U.S. CONST. art. I, § 4, cl. 1, and replace them with regulations of the state courts' own devising, based on 
+  22-674: The Immigration and Nationality Act provides that a noncitizen who does not appear at a removal hearing shall beordered removed in absentia. but only if she was provided "written notice required under paragraph (l) or (2) of section 1229(a).'' 8 U.S.C. §1229a (b)(5)(A). The Act authorizes rescission
+  04-1581: 1. Whether as-applied challenges are permitted to the prohibition on corporate disbursements for electioneering communications at 2 U.S.C. § 441b after McConnell v. FEC, 540 U.S. 93 (2003). 2. If so, whether the prohibition on electioneering communications is unconstitutional as applied to the facts
+  06-939: Is the State of California’s regulation of noncoercive employer speech about union organizing, California Assembly Bill 1889, Cal. Gov’t Code §§ 16645.2, 16645.7, preempted by federal labor law?
+  03-923: Whether the Fourth Amendment requires reasonable, articulable suspicion to justify using a drug-detection dog to sniff a vehicle during a legitimate traffic stop.
+  09-559: The district court granted a preliminary injunction protecting against public disclosure, as opposed to private disclosure to the government only, of those signing a petition to put a referendum on the ballot ("petition signers"). The Ninth Circuit reversed, concluding that the district court based 
+  21-887: The Individuals with Disabilities Education Act (IDEA) preserves the rights of children with disabilities to bring claims under the Constitution and other federal anti-discrimination statutes, so long as they exhaust the IDEA's administrative procedures if their non-IDEA suit "seek[s] relief that is
+  02-281: 1. Whether the doctrine of tribal sovereign immunity enables Indian tribes, their gambling casinos and other commercial businesses to prohibit the searching of their property by law enforcement officers for criminal evidence pertaining to the commission of off-reservation State crimes, when the sear
+
+=== MANUAL REVIEW (hand-written; kept verbatim on re-run)
+Reviewed 2026-10-12 ~16:40 PT (Claude) on the 291-341-file snapshots (filing years 2013-2019 = SCDB terms 2015-2018, plus OT2026
+pending). Text-only review; no outcome field was opened or computed. Docket ids below stay valid as raw/ grows; later samples are not
+re-reviewed unless this section is edited.
+A. Matched QPs: read EVERY SPLIT_RE hit in all 70 matched QPs (291-file run), incl. the 15 listed above.
+   Genuine split / conflict-among-courts statements: ~58/70 (precision ~0.83 at docket level).
+   Docket-level false positives (12) - first and only hit is not a split among courts:
+   - intra-court division, 9: 13-1496, 15-338, 15-446, 15-1406, 16-402, 16-1011, 17-71, 17-988 ("a divided panel of the X Circuit",
+     "a divided Sixth Circuit", "in a divided decision, the Ninth Circuit"); 15-1189 ("the en banc Federal Circuit divided below").
+     This is the dominant FP class (~13% of matches); FP_HINTS 'intra-court division' now flags exactly these 9.
+   - preemption, 1: 14-614 ("the Fourth Circuit held Maryland's actions field and conflict preempted").
+   - conflict with this Court's precedent, 2: 16-369 ("this Court has not yet agreed or disagreed with the Ninth Circuit's rule";
+     "...rule conflicts with Graham v. Connor"); 15-927 (Federal Circuit en banc "to consider the conflict between Petrella and
+     Aukerman" = this Court's case vs circuit precedent; borderline).
+   Checked and correct despite a diagnostic hint: 15-1248 (conflicts with EEOC v. Shell Oil AND "three other circuits"),
+   14-990 ("has divided the lower courts"), 16-424 ("the circuit courts have deeply divided"), 17-1705 (one "split decision" hit, but
+   four genuine circuit-split hits). The 'no-.' literal variant would differ only on 15-1248 (citation "U.S." in the gap): correct match.
+B. Non-matched QPs: read in full the 10 openings listed (17-269, 14-1504, 17-5554, 14-8349, 18-302, 17-1042, 15-1111, 18-1323,
+   14-1520, 14-449) and every non-matched QP containing a split-family word (~20). None of the 10 states a split in split vocabulary
+   (18-1323 "conflicts with this Court's binding precedent" = correctly 0). False negatives found (outside the definition, kept):
+   - 14-449: Kansas Supreme Court vs "as at least three Circuits have held" (implicit split, no split word).
+   - 15-1262: "the split between the court below and the North Carolina Supreme Court" (named state court + singular court below).
+   - 25-581: "an entrenched and acknowledged 7-4 split" (no court word in that sentence).
+   - 18-457: "There is now a direct split spanning nine states. Four state courts have held..." (court word in the next sentence).
+   Fixed by court-word synonyms before this review was finalized (documented in the module docstring): 15-1439 ("has split federal
+   district courts ... federal appeals courts"), 25-246 ("a lower-court conflict").
+   Correct non-matches of intra-court wording: 14-1470 and 17-9572 ("a divided Minnesota/Mississippi Supreme Court"), 16-1275
+   ("the divided panel below"), 17-333 ("in a divided opinion"); preemption 14-623 ("conflict preempted"); 16-1466 ("this Court split
+   4 to 4"); 16-712 ("conflicts with this Court's decision").
+C. Parsing spot checks vs raw pdftotext output (qp_chars recomputed = CSV; body ends at the last question; cut line):
+   14-449 (GRANTED LIMITED TO...), 15-105 (LIMITED TO QUESTIONS 1 AND 2; post-argument ORDER OF MARCH 29, 2016 excluded),
+   14-7505 (all-caps IFP QP kept whole; cut at LIMITED TO THE FOLLOWING QUESTION), 14-1516 (cut at DISMISSED AS IMPROVIDENTLY
+   GRANTED = post-decision text, excluded), 25-238 / 25-566 (PETITIONS GRANTED AS TO ...; trailer phrase added after this audit),
+   14-280 and 25-170 (IN ADDITION TO THE QUESTION...; 25-170's 2026-09-28 recusal note excluded). [RETRACTED, see E: "after the
+   fix no body contains annotation words" was FALSE - that check was upper-case only and missed 11 bodies in the 410-file run.]
+   0 header fallbacks, 0 QPs without a trailer, 0 extraction failures so far.
+A2. Addendum, 384-file snapshot (86 matches): read the 13 matches added since A. Genuine: 16-1094, 17-204, 17-1498 ("divided
+   decision that conflicts with decisions of federal courts of appeals" - hint-flagged but genuine), 17-1712, 18-217, 18-1015,
+   18-1432, 18-1165 (first hit "readily divide" is noise, second hit "opened a circuit split" is genuine). False positives (5):
+   18-916, 18-1028 ("divided Federal Circuit", intra-court); 18-587, 18-588 ("this Court affirmed, by an equally divided Court, a
+   decision of the Fifth Circuit" = this Court's division); 18-260 ("courts of appeals have read the CWA's line dividing ...").
+   Running total: ~69/86 genuine (precision ~0.80). The 17 FPs: intra-court division 11 (incl. 1 en banc), this Court's own
+   precedent/division 4 (16-369, 15-927, 18-587, 18-588), preemption 1 (14-614), plain verb "dividing" 1 (18-260).
+   LITERAL_RE now also disagrees on 18-8369 (pro se: "is this a legal conflict between these two courts? Would this statement of
+   the Tenth Circuit..."): the '?' sentence-end rule blocks it; borderline, left as 0.
+D. For the amendment owner (not changed here, decide BEFORE any outcome is computed): the intra-court-division class could be
+   excluded with a negative rule (e.g. "a divided (panel|<Nth> Circuit|decision)" / "en banc ... divided"). Left in, because it
+   literally satisfies the pre-registered definition.
+E. Adversarial review round 2026-10-12 ~17:00-17:20 PT (Claude; text only, no outcome field; argued status = SCDB dateArgument, read
+   for coverage counts only). Both reviewer findings were confirmed against the raw text and SCDB.
+   E1 (blocker, spec level, NOT fixable in this module): a QP PDF exists iff the case got plenary review. Among fetched SCDB dockets
+      (terms <= 2025): non-argued 0/60 with a QP PDF, argued 753/753 (813-docket snapshot); the live counts are in the header warning.
+      qp_have, and qp_split with missing filled as 0 (stage2.py lines 47/70, spec B's Zc), therefore encode argued status (rule 1
+      leak). This module keeps spec B's output (row only when a QP exists) and now documents the problem (docstring 6, header
+      warning). The fix belongs to the amendment owner before the commit: drop qp_have from Zc; do not encode missing qp_split as 0
+      (training-mean imputation, or QP family fitted/scored on granted cases only, others falling back to K20). Check docket_have too.
+   E2 (major, fixed here): the line cut was case-sensitive, single-line, and missed several note formats, so post-grant text stayed
+      in 11 of the 410 bodies (15-138, 15-1498, 17-269, 17-965, 18-431, 19-46, 19-631, 19-635, 19-760, 19-1434, 20-297) and pending
+      26-426's body was the Court's own "Order of September 29, 2026". More appeared as raw/ grew (19-71, 18-540, 18-956, 19-292,
+      19-357, 19-438, 20-1530/1531/1780, 21-401, 21-954, 22-23, 22-277, 22-555, 22-1079, 22-1219, 23-235/236, 23-411, 23-1275,
+      24-109/110, 24-820/860, 13-7120, 12-1182/1183, 11-398, 11-713/714/715, 10-1261, 10-1491, 09-152, 09-1343, 10-76). Fix
+      (docstring 2): TRAILER_RE
+      matched on the line alone and joined with the next line; Clerk mixed-case phrases (capital first letter + any case); date-
+      prefixed notes; PRESS RELEASE / CLERK'S LETTER / applications / motions with a ruling verb; recusals of any case (incl. "THE
+      CHIEF JUSTICE [ROBERTS] TOOK NO PART"); HARD_CUT as a second, in-line guard; NOTE_AUDIT + CAPS_TAIL as automatic third checks
+      with the reviewed AUDIT_OK list. Bodies that are only Court text (21-588, 21-1086/1087, 22-58, 22-535, 23-939, 24-656/657,
+      25-332, 26-426) are now failures "court_text_only" -> missing, consistent with "petition's question(s) only".
+      Verification on the cached text of every PDF present (1,196 files, filing years 08-26): the first cut line of every body is a genuine note (the
+      inventory of first-cut phrases was read in full); no body was cut mid-question (all bodies ending without punctuation were
+      read: they are complete questions); every NOTE_AUDIT / CAPS_TAIL hit outside AUDIT_OK was read and either fixed by a pattern
+      or added to AUDIT_OK (petition text: case history, statutes). Pre-fix vs fixed body on all 1,196 cached files: 73 bodies
+      changed, no qp_split value changed, 6 former rows (all qp_split 0: 21-588, 22-535, 22-58, 23-939, 25-332, 26-426) are now
+      court_text_only; so no row's qp_split had been set by note text. qp_chars changed for the contaminated rows.
+      E1 addendum: with 2008-2012 dockets present, 2 non-argued dockets do have a QP (08-1234 Kiyemba, 10-72 Madison County: granted,
+      then vacated without argument); qp_have is a near-exact proxy for plenary review / argued status, the warning stands. Old 2002-2009 PDFs were not yet present when this was written: the header's
+      UNREVIEWED count must be 0 (or read and resolved) after the full fetch, before the feature is used.

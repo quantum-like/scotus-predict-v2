@@ -129,3 +129,8 @@ yearly retrain, same embargo, same K05 aggregation + Platt (prior 10 terms, emba
 - **Disagreement tracker (not a trial, no selection, no trading):** katz/DISAGREE_OT2026.csv lists OT2026 frozen markets with
   |P_model(v2 K10) - Kalshi at freeze| >= 0.25; katz/DISAGREE_LOG.md logs outcomes forward (who was closer, Brier each) as markets resolve.
 - MPS use recorded per trial in run_meta.json (devices); RF parts are CPU (no sklearn GPU path).
+
+## Amendment 6 (Claude, 2026-10-13, branch katz-claude-2): K25-K28 + reference K10s, N_trials = 35 -> see katz/AMENDMENT_6_CLAUDE.md
+New amendment file (pre-registration), committed before any K25+ fit. Number 6 because "Amendment 4 (waiver)" (51f5557, K16/K17) and another
+agent's "Amendment 5" (fe89cec, K20-K23, N=30) exist on the other machine (STATUS_K16.md, STATUS_K20.md), not on GitHub. N = 26 + 4 + 4 + 1.
+Primary metric: argued cases, petitioner wins (Kalshi-aligned); 1990-2014 only; purged/embargoed CPCV; holdout (already SEEN) read once.

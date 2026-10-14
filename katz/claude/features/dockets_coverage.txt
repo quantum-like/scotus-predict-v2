@@ -1,0 +1,111 @@
+parse_dockets.py coverage, run 2026-10-13 17:31 PDT (raw/ may still be growing; re-run to refresh)
+Only coverage counts, parse-success rates, distributions of the features themselves, and spot checks. No outcome is read.
+
+files parsed: 2105   formats: old=1388, new=675, mid=42
+entries found (>0): 2105/2105 = 1.000
+docketed_date found: 2105/2105 = 1.000
+lower_court found: 2104/2105 = 1.000
+lc_decision_date found: 1883/2105 = 0.895
+petition_date found: 2101/2105 = 0.998
+grant found: 2051/2105 = 0.974
+  grant_titlecase ('Petition Granted'): 1
+  no grant but a lower-case 'petition ... is granted' entry (left missing per spec): 02-516, 03-1669, 04-104, 04-105, 05-8794, 06-1195, 06-1196, 06-8273, 08-681, 08-9156, 12-88, 17-1660, 17-654, 18-443, 19-122, 21-1087, 21-588, 22-58, 22-714
+  no grant entry (all, first 60): 01-131, 02-1369, 02-1597, 02-516, 03-1028, 03-1669, 03-374, 03-5165, 04-104, 04-105, 04-1704, 04-394, 04-5323, 04-8384, 05-101, 05-555, 05-8794, 06-1195, 06-1196, 06-605, 06-641, 06-8273, 07-10689, 07-212, 08-10914, 08-1513, 08-5573, 08-5574, 08-681, 08-9156, 09-144, 09-291, 09-8854, 10-1115, 10-1521, 10-1540, 10-797, 11-1053, 11-845, 12-1217, 12-382, 12-694, 12-88, 16-1023, 17-1364, 17-1660, 17-654, 18-443, 19-122, 20-391, 21-1087, 21-588, 22-58, 22-714
+  summary_disposition (grant entry is the decision; grant_date kept, docket features missing): 116/2105 = 0.055
+    all of n_entries_pre_grant, cvsg, n_amicus_cert, n_distributed_pre, relists, days_to_grant + logs missing on these rows: True
+    dockets: 00-262, 00-866, 01-1385, 01-1471, 01-1765, 01-339, 01-835, 01-8419, 02-1212, 02-1295, 02-137, 02-29, 02-5636, 02-8636, 03-1200, 03-1261, 04-1095, 04-1475, 04-1538, 04-9949, 05-379, 05-552, 05-6997, 05-8400, 06-1680, 06-532, 06-533, 06-7317, 08-1034, 08-10495, 08-10537, 08-1263, 08-5657, 08-5721, 09-273, 09-5270, 09-5731, 09-8852, 09-91, 09-940, 10-1000, 10-333, 10-91, 11-1179, 11-1377, 11-208, 11-38, 11-391, 11-394, 11-74, 12-1084, 12-168, 13-113, 13-551, 13-5967, 13-6440, 13-9085, 13-946, 14-10008, 14-10078, 14-1143, 14-1372, 14-212, 14-593, 14-618, 14-6873, 14-848, 14-939, 15-278, 15-493, 15-648, 15-723, 15-789, 15-833, 15-8366, 15-9173, 16-1116, 16-1177, 16-1468, 16-6316, 16-67, 16-992, 17-1106, 17-193, 17-467, 17-515, 17-6075, 17-742, 17-801, 18-272, 18-483, 18-56, 18-921, 18-9674, 19-1108, 19-1261, 19-1302, 19-5421, 20-1084, 20-1212, 20-1539, 20-1668, 20-507, 20-940, 23-167, 23-6573, 24-1159, 24-809, 25-180, 25-248, 25-297, 25-51, 25-52, 25-580, 25-748, 25-767
+  pre-decision grant (features present): 1935/2105 = 0.919
+parse errors (file caught mid-write?): -
+LEAK WARNING: no-grant dockets are those disposed of without a cert-grant/PJN order (summary affirmances of appeals,
+  lower-case per curiam dispositions) and summary_disposition rows have a grant_date but missing features, so neither
+  grant_date.notna() nor feature missingness may be a regressor (both encode disposition type). Availability = page
+  existence (docket_have) or docket era, used only to switch the family on/off; parse_note/grant_text are diagnostics.
+
+Among the 1935 dockets with a pre-decision grant (pre-grant entries only; summary dispositions excluded):
+  cvsg = 1: 198/1935 = 0.102
+  n_amicus_cert > 0: 973/1935 = 0.503
+  relists > 0 (n_distributed_pre >= 2): 1218/1935 = 0.629
+  n_distributed_pre = 0: 75/1935 = 0.039
+  days_to_grant missing: 0; measured from docketed date (no usable petition entry): 4
+  US/SG amicus entries excluded from n_amicus_cert: 211 entries in 207 dockets
+
+Feature distributions (dockets with a pre-decision grant):
+  n_entries_pre_grant n=1935 mean=   10.66 q0=1.00 q10=5.00 q25=7.00 q50=10.00 q75=13.00 q90=17.00 q100=50.00
+  n_amicus_cert      n=1935 mean=    1.54 q0=0.00 q10=0.00 q25=0.00 q50=1.00 q75=2.00 q90=4.00 q100=25.00
+  n_distributed_pre  n=1935 mean=    2.18 q0=0.00 q10=1.00 q25=1.00 q50=2.00 q75=3.00 q90=4.00 q100=22.00
+  relists            n=1935 mean=    1.21 q0=0.00 q10=0.00 q25=0.00 q50=1.00 q75=2.00 q90=3.00 q100=21.00
+  days_to_grant      n=1935 mean=  143.34 q0=0.00 q10=69.00 q25=95.00 q50=125.00 q75=165.00 q90=253.00 q100=672.00
+  amicus_cert        n=1935 mean=    0.61 q0=0.00 q10=0.00 q25=0.00 q50=0.69 q75=1.10 q90=1.61 q100=3.26
+  relists_log        n=1935 mean=    0.62 q0=0.00 q10=0.00 q25=0.00 q50=0.69 q75=1.10 q90=1.39 q100=3.09
+  log_days_to_grant  n=1935 mean=    4.81 q0=0.00 q10=4.25 q25=4.56 q50=4.84 q75=5.11 q90=5.54 q100=6.51
+
+By docket year prefix (files, grant found, of which summary_disposition, cvsg=1 | pre-decision grant, amicus>0 | same,
+  relists>0 | same, lc_decision_date found):
+  00: files=  90 grant=  90 (1.00) sd=  2  cvsg=0.08 amicus>0=0.32 relists>0=0.47  lc_date=0.00
+  01: files=  86 grant=  85 (0.99) sd=  6  cvsg=0.09 amicus>0=0.35 relists>0=0.48  lc_date=0.00
+  02: files= 108 grant= 105 (0.97) sd=  6  cvsg=0.09 amicus>0=0.41 relists>0=0.27  lc_date=0.70
+  03: files=  85 grant=  81 (0.95) sd=  2  cvsg=0.09 amicus>0=0.39 relists>0=0.57  lc_date=1.00
+  04: files=  95 grant=  89 (0.94) sd=  4  cvsg=0.05 amicus>0=0.40 relists>0=0.51  lc_date=0.99
+  05: files=  79 grant=  76 (0.96) sd=  4  cvsg=0.12 amicus>0=0.49 relists>0=0.68  lc_date=1.00
+  06: files=  89 grant=  84 (0.94) sd=  4  cvsg=0.14 amicus>0=0.46 relists>0=0.50  lc_date=1.00
+  07: files=  82 grant=  80 (0.98) sd=  0  cvsg=0.06 amicus>0=0.46 relists>0=0.39  lc_date=1.00
+  08: files= 106 grant= 100 (0.94) sd=  6  cvsg=0.13 amicus>0=0.49 relists>0=0.44  lc_date=0.99
+  09: files=  84 grant=  81 (0.96) sd=  6  cvsg=0.16 amicus>0=0.39 relists>0=0.63  lc_date=1.00
+  10: files=  83 grant=  79 (0.95) sd=  3  cvsg=0.08 amicus>0=0.47 relists>0=0.58  lc_date=1.00
+  11: files=  82 grant=  80 (0.98) sd=  7  cvsg=0.12 amicus>0=0.48 relists>0=0.44  lc_date=1.00
+  12: files=  96 grant=  92 (0.96) sd=  2  cvsg=0.17 amicus>0=0.51 relists>0=0.62  lc_date=1.00
+  13: files=  76 grant=  76 (1.00) sd=  6  cvsg=0.14 amicus>0=0.50 relists>0=0.77  lc_date=1.00
+  14: files=  86 grant=  86 (1.00) sd= 10  cvsg=0.08 amicus>0=0.46 relists>0=0.86  lc_date=1.00
+  15: files=  82 grant=  82 (1.00) sd=  8  cvsg=0.16 amicus>0=0.58 relists>0=0.78  lc_date=1.00
+  16: files=  78 grant=  77 (0.99) sd=  6  cvsg=0.13 amicus>0=0.58 relists>0=0.86  lc_date=1.00
+  17: files=  84 grant=  81 (0.96) sd=  7  cvsg=0.14 amicus>0=0.57 relists>0=0.91  lc_date=1.00
+  18: files=  80 grant=  79 (0.99) sd=  5  cvsg=0.05 amicus>0=0.58 relists>0=0.73  lc_date=0.96
+  19: files=  69 grant=  68 (0.99) sd=  4  cvsg=0.11 amicus>0=0.61 relists>0=0.72  lc_date=1.00
+  20: files=  69 grant=  68 (0.99) sd=  6  cvsg=0.10 amicus>0=0.63 relists>0=0.74  lc_date=1.00
+  21: files=  62 grant=  60 (0.97) sd=  0  cvsg=0.07 amicus>0=0.70 relists>0=0.75  lc_date=0.95
+  22: files=  64 grant=  62 (0.97) sd=  0  cvsg=0.06 amicus>0=0.56 relists>0=0.79  lc_date=0.95
+  23: files=  74 grant=  74 (1.00) sd=  2  cvsg=0.04 amicus>0=0.61 relists>0=0.74  lc_date=1.00
+  24: files=  67 grant=  67 (1.00) sd=  2  cvsg=0.12 amicus>0=0.75 relists>0=0.86  lc_date=0.99
+  25: files=  48 grant=  48 (1.00) sd=  8  cvsg=0.05 amicus>0=0.55 relists>0=0.75  lc_date=0.96
+  26: files=   1 grant=   1 (1.00) sd=  0  cvsg=0.00 amicus>0=1.00 relists>0=0.00  lc_date=1.00
+
+Lower courts (top 12):
+   432  United States Court of Appeals for the Ninth Circuit
+   180  United States Court of Appeals for the Fifth Circuit
+   165  United States Court of Appeals for the Sixth Circuit
+   151  United States Court of Appeals for the Second Circuit
+   137  United States Court of Appeals for the Eleventh Circuit
+   109  United States Court of Appeals for the Fourth Circuit
+    98  United States Court of Appeals for the District of Columbia Circuit
+    93  United States Court of Appeals for the Federal Circuit
+    93  United States Court of Appeals for the Eighth Circuit
+    85  United States Court of Appeals for the Seventh Circuit
+    83  United States Court of Appeals for the Third Circuit
+    80  United States Court of Appeals for the Tenth Circuit
+
+Spot checks: 10 dockets drawn at random (seed 0) and verified by reading the raw page text; VERIFIED in parse_dockets.py
+  holds (grant_date, n_entries_pre_grant, cvsg, n_amicus_cert, n_distributed_pre, days_to_grant) as read by hand; 'match' re-checks the current parse.
+  14-1505: match=True parsed=('2015-11-06', 10, 0, 0, 3, 140) | grant_text='Petition GRANTED The petition for a writ of certiorari in No. 14-1418 is granted limited to Question 1 presented by the petition' | petition=2015-06-19 docketed=2015-06-22 lc='United States Court of Appeals for the District of Columbia Circuit' lc_date=2014-11-14 | fmt=old; n_entries=109
+  14-990: match=True parsed=('2015-06-08', 8, 0, 1, 3, 118) | grant_text='Petition GRANTED' | petition=2015-02-10 docketed=2015-02-18 lc='United States Court of Appeals for the Fourth Circuit' lc_date=2014-10-07 | fmt=old; n_entries=29
+  15-1039: match=True parsed=('2017-01-13', 15, 1, 4, 3, 332) | grant_text='Petition GRANTED' | petition=2016-02-16 docketed=2016-02-18 lc='United States Court of Appeals for the Federal Circuit' lc_date=2015-07-21 | fmt=old; n_entries=45; us_amicus_excluded=1 | note: 1 US amicus brief (Dec 7 2016, after the CVSG) excluded
+  15-105: match=True parsed=('2015-11-06', 24, 0, 15, 2, 106) | grant_text='Petition GRANTED limited to Questions 1 and 2 presented by the petition' | petition=2015-07-23 docketed=2015-07-23 lc='United States Court of Appeals for the Tenth Circuit' lc_date=2015-07-14 | fmt=old; n_entries=122 | note: 14 amicus briefs on Aug 24 2015 + 1 on Aug 21; consents to amicus filings not counted
+  15-6092: match=True parsed=('2016-01-19', 6, 0, 0, 1, 126) | grant_text='Motion to proceed in forma pauperis and petition for a writ of certiorari GRANTED' | petition=2015-09-15 docketed=2015-09-17 lc='United States Court of Appeals for the Eighth Circuit' lc_date=2015-05-12 | fmt=old; n_entries=22
+  15-9260: match=True parsed=('2016-10-28', 8, 0, 0, 2, 177) | grant_text='Motion to proceed in forma pauperis and petition for a writ of certiorari GRANTED limited to Question 2 presented by the petition' | petition=2016-05-04 docketed=2016-05-11 lc='United States Court of Appeals for the Eighth Circuit' lc_date=2015-12-29 | fmt=mid; n_entries=29; meta_docketed_differs | note: displayed Docketed May 11, 2016 (META says June 30, 2015)
+  16-373: match=True parsed=('2017-01-13', 8, 0, 2, 2, 113) | grant_text='Petition GRANTED limited to Question 1 presented by the petition' | petition=2016-09-22 docketed=2016-09-22 lc='United States Court of Appeals for the Second Circuit' lc_date=2016-07-08 | fmt=old; n_entries=34
+  17-530: match=True parsed=('2018-01-12', 6, 0, 1, 2, 98) | grant_text='Petition GRANTED' | petition=2017-10-06 docketed=2017-10-10 lc='United States Court of Appeals for the Seventh Circuit' lc_date=2017-05-08 | fmt=new; n_entries=21
+  25-417: match=True parsed=('2026-06-22', 17, 0, 0, 4, 262) | grant_text='Petition GRANTED' | petition=2025-10-03 docketed=2025-10-07 lc='United States Court of Appeals for the Ninth Circuit' lc_date=2024-09-06 | fmt=new; n_entries=42
+  25-581: match=True parsed=('2026-04-20', 34, 0, 20, 3, 158) | grant_text='Petition GRANTED limited to Questions 1 and 2 presented by the petition' | petition=2025-11-13 docketed=2025-11-17 lc='United States Court of Appeals for the Tenth Circuit' lc_date=2025-09-30 | fmt=new; n_entries=101; us_amicus_excluded=1 | note: USCCB brief counted; 'Brief amicus curiae of United States in support of the petitioners' (Jan 30 2026) excluded
+  spot checks matching: 10/10
+
+Summary-disposition checks (SD_CHECKS, read by hand from the grant-date entries): expected flag vs current parse
+  14-10008: ok=True expected_summary=True parsed_summary=True grant_date=2016-03-07 grant_text='Petition Granted' days_to_grant=
+  15-723: ok=True expected_summary=True parsed_summary=True grant_date=2016-04-04 grant_text='Petition GRANTED' days_to_grant=
+  18-272: ok=True expected_summary=True parsed_summary=True grant_date=2019-02-25 grant_text='Petition GRANTED' days_to_grant=
+  18-483: ok=True expected_summary=True parsed_summary=True grant_date=2019-05-28 grant_text='Petition GRANTED' days_to_grant=
+  20-1539: ok=True expected_summary=True parsed_summary=True grant_date=2021-10-18 grant_text='Petition GRANTED' days_to_grant=
+  16-6855: ok=True expected_summary=False parsed_summary=False grant_date=2017-02-27 grant_text='Motion to proceed in forma pauperis and petition for a writ of certiorari GRANTED' days_to_grant=109
+  18-587: ok=True expected_summary=False parsed_summary=False grant_date=2019-06-28 grant_text='Petition for a writ of certiorari GRANTED' days_to_grant=235
+  21-846: ok=True expected_summary=False parsed_summary=False grant_date=2022-03-28 grant_text='Petition GRANTED' days_to_grant=126
+  16-1161: ok=True expected_summary=False parsed_summary=False grant_date=2017-06-19 grant_text='Further consideration of the question of jurisdiction is POSTPONED to the hearing of the case on the merits' days_to_grant=87
+  26-426: ok=True expected_summary=False parsed_summary=False grant_date=2026-09-29 grant_text='Petition GRANTED' days_to_grant=5
+  summary-disposition checks ok: 10/10 present
