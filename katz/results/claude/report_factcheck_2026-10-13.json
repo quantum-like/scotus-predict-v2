@@ -1,0 +1,267 @@
+{
+  "summary": "Fact-check katz/CLAUDE_REPORT.md numbers and claims against result files, git history and the brief",
+  "agentCount": 2,
+  "logs": [],
+  "result": [
+    {
+      "lens": "numbers",
+      "errors": [
+        {
+          "sentence": "| 30 days before decision | 29 | **0.095** | 0.199 (KC1) | 0.208 | 0.203 |",
+          "problem": "The Kalshi d30 Brier is rounded wrong. The source value is 0.094457, which rounds to 0.094. The 0.095 comes from rounding the log's printed 0.0945 a second time. n, best model, K10 and base rate in this row are all correct.",
+          "correct": "0.094 (0.0944571; the log prints 0.0945)",
+          "source": "scotus-predict-v2/katz/results/claude/HOLDOUT_kalshi_settled_claude.csv (d30,kalshi,29,0.09445707758620692); holdout_once_output.log"
+        },
+        {
+          "sentence": "| 7 days before decision | 36 | **0.081** | 0.192 (K10s) | 0.193 (reproduces Amendment 2) | 0.203 |",
+          "problem": "The Kalshi d7 Brier is rounded wrong. The source value is 0.080480, which rounds to 0.080. The 0.081 comes from rounding the printed 0.0805 a second time. The other cells are correct, and K10's 0.1929 does reproduce Amendment 2.",
+          "correct": "0.080 (0.0804796; the logs print 0.0805)",
+          "source": "scotus-predict-v2/katz/results/claude/HOLDOUT_kalshi_settled_claude.csv (d7,kalshi,36,0.08047963888888889); /Users/olgavlasova/scotus-predict-rerun/katz/holdout_once.log (kalshi 36 0.0805, m_K10 0.1929)"
+        },
+        {
+          "sentence": "An independent recomputation matched every number to 1e-16 and a bug hunt found no error",
+          "problem": "This overstates the verification. The recompute says sharpness_sd did NOT match: it was off by 2.0e-5 to 3.2e-5, a ddof convention difference that matches when recomputed with ddof = 1. The DSRs were only checked for internal consistency: they all imply the same SR0 = 0.4678. The verifier says it 'could not rebuild the pool's variance itself', so the DSR values were never independently reproduced. CPCV path and split std/worst are not in the list of recomputed columns either.",
+          "correct": "An independent recompute matched the Brier, accuracy, sign-test, McNemar, Holm, CPCV-mean, PBO and SR columns to about 1e-16. sharpness_sd differed only by the ddof convention. The DSRs were checked for internal consistency only (common SR0), not rebuilt. The bug hunt found no error.",
+          "source": "scotus-predict-v2/katz/results/claude/selection_verification_2026-10-13.json (recompute findings: 'Only sharpness_sd differed...'; 'I could not rebuild the pool's variance itself')"
+        },
+        {
+          "sentence": "The big misses are the affirmances the model never sees coming (Skrmetti, Moore, the marijuana-gun case, GVG, NPPC, tariffs), where Kalshi had moved to 0.07-0.27.",
+          "problem": "GVG (Gonzalez v. Google) was not an affirmance. SCDB codes it as vacated and remanded (caseDisposition 5, partyWinning 0). The other five are affirmances (caseDisposition 2). The d7 Kalshi range of 0.07-0.265 is correct.",
+          "correct": "Skrmetti, Moore, Hemani (marijuana-gun), NPPC and V.O.S. Selections (tariffs) were affirmed. Gonzalez v. Google was vacated and remanded, and petitioner still lost.",
+          "source": "scotus-predict-v2/katz/results/claude/HOLDOUT_kalshi_rows_claude.csv (GVG-24DEC30: scdb_caseDisposition 5.0, scdb_partyWinning 0.0); HOLDOUT_DISAGREE_settled_claude.csv"
+        },
+        {
+          "sentence": "The only notable improvement anywhere in the project so far is the box agent's oral-argument trial K16 (0.1979 vs K10 0.2052 on 1990-2014), which did not pass its own significance gate",
+          "problem": "K17 (K16 plus sentiment) improved almost exactly as much, 0.1984 vs 0.2052, and came closer to significance (sign-test p_holm 0.059 vs K16's 0.130; DSR 0.957 vs 0.967 at N = 26). Calling K16 'the only' notable improvement leaves K17 out.",
+          "correct": "K16 0.1979 (p_holm 0.130, DSR_N26 0.967) and K17 0.1984 (p_holm 0.059, DSR_N26 0.957) vs K10 0.2052, all-cases/reverse metric, 1990-2014. Neither passed the Holm gate.",
+          "source": "/Users/olgavlasova/scotus-predict-rerun/katz/eval_k1617/selection_1990_2014.csv; /Users/olgavlasova/scotus-predict-rerun/katz/STATUS_K16.md (18:55 PT line); scotus-predict-v2/katz/LEDGER_RECONCILIATION.md row 23-26"
+        },
+        {
+          "sentence": "K16 (question counts) is the one trial that moved Brier materially (0.1979), but it is not significant after Holm (p 0.13), its DSR (0.97 at N = 26) would be lower at N = 37",
+          "problem": "Same problem as above: K17 also moved Brier materially (0.1984). The quoted K16 numbers (0.1979, p_holm 0.13, DSR 0.97 at N = 26) are correct.",
+          "correct": "K16 0.1979 and K17 0.1984 both moved Brier materially. K17's p_holm is 0.059 and its DSR_N26 is 0.957.",
+          "source": "/Users/olgavlasova/scotus-predict-rerun/katz/eval_k1617/selection_1990_2014.csv"
+        },
+        {
+          "sentence": "Against K10: every new trial is worse, on the selection window, on CPCV, and on the holdout.",
+          "problem": "K10 as recorded has no CPCV score: its CPCV columns are empty, and the report's own table shows '-'. On CPCV the KC trials can only be compared with K10s.",
+          "correct": "Every new trial is worse than K10 on the selection window (WF 0.2272-0.2277 vs 0.2231) and on the holdout (0.2215-0.2221 vs 0.2119). On CPCV they are worse than K10s (0.2259-0.2265 vs 0.2199). K10 itself has no CPCV value.",
+          "source": "scotus-predict-v2/katz/results/claude/selection_1990_2014.csv (K10 row: cpcv_* empty)"
+        },
+        {
+          "sentence": "**Holdout is not fresh** (third exposure counting Amendment 2's read and earlier runs); it was never used to choose anything here.",
+          "problem": "No source supports 'third exposure', and the count looks too low. KATZ_PREREG says 2015-2025 was already seen in the clean, strict, stacked and direction runs. dfe303d printed 2015-2025 for the K-series ('seen 2015-2025', SEEN_informational_2015_2025.csv). Amendment 2 read it again (28bc92c). That makes C1's read at least the fourth exposure, and the exact count is not documented.",
+          "correct": "Holdout already seen several times: earlier clean/strict/stacked/direction runs, the K-series evaluation (dfe303d) and Amendment 2's single read (28bc92c). The exact count is not documented.",
+          "source": "scotus-predict-v2/KATZ_PREREG.md line 9; git log katz-claude-2 (dfe303d, 28bc92c); katz/AMENDMENT_C1_CLAUDE.md line 31 ('Amendment 2 and earlier')"
+        },
+        {
+          "sentence": "KC1 differs from the Kalshi price by >= 0.25 on 7 of 25 markets (Anderson v. Intel, Crowther, Jouppi, International Partners, Wassily, Grand, DOL v. Sun Valley).",
+          "problem": "The 7 flagged markets and their names are correct: ANDINT28, CROBOA28, JOUALA28, INTFER28, WASBLA28, GRACIT28 and DOLSUN28 each match their Kalshi titles. However, one of the 25 markets, KXSCOTUSAR15-30JAN, has no Kalshi price at the freeze, so only 24 could be compared. The Kalshi price used is the v2-freeze last price from 2026-10-12 10:37 PT, not a 2026-10-13 price.",
+          "correct": "7 of the 24 markets with a Kalshi price at the v2 freeze (2026-10-12 10:37 PT). 25 markets were frozen in total.",
+          "source": "scotus-predict-v2/katz/claude/DISAGREE_OT2026_claude.csv; FORWARD_OT2026_claude.csv (KXSCOTUSAR15-30JAN blank price); FORWARD_CLAUDE.md; katz/eval/kalshi_markets_at_freeze.txt"
+        },
+        {
+          "sentence": "## Commits (katz-claude-2, pushed; main and katz-improve untouched)",
+          "problem": "The repo has no branch named main. The default branch is master (origin/HEAD -> origin/master, at e34e372, untouched). The commit list also leaves out bcf61be (2026-10-13 20:22, trial ledger reconciliation draft), which is on katz-claude-2 between 70d024b and ca81439. All 8 hashes that are listed, and their descriptions, match git.",
+          "correct": "master and katz-improve untouched (katz-improve at 59b4d24 locally and 02c7d81 on origin). Add bcf61be ledger reconciliation draft.",
+          "source": "git log / git rev-parse in scotus-predict-v2 (katz-claude-2 = origin/katz-claude-2 = 13dce9a; master = e34e372)"
+        },
+        {
+          "sentence": "| KC3 | KC1 + lower-court ideology: share of Democratic-appointed active judges on the circuit below (FJC data) x lower-court direction | panel-level ideology would need a CourtListener account (not created) |",
+          "problem": "No source names CourtListener. The amendment says only 'panel level needs credentials'. KC3 also includes the main effect (dshare - 0.5), not only the interaction with lower-court direction.",
+          "correct": "Panel-level ideology needs credentials (unspecified service). Zc = [dshare - 0.5, s_i (dshare - 0.5)].",
+          "source": "scotus-predict-v2/katz/AMENDMENT_C1_CLAUDE.md lines 71-75"
+        },
+        {
+          "sentence": "Ideal points carry real per-justice signal (standardized coefficient 0.27 at the justice level) but add nothing at the case level: the forest already encodes each justice's lagged voting direction.",
+          "problem": "The coefficient 0.2735 (sA_theta, KC2/KC4 full fit, 1980-2014 argued) is correct. However, no SE or test supports calling it 'real signal', and no source tests the explanation that the forest already encodes lagged voting direction. That part is conjecture.",
+          "correct": "sA_theta = 0.273 (vs lp 0.472) in the full-fit justice-level LR. The reason it adds nothing at the case level is a hypothesis, not a finding.",
+          "source": "scotus-predict-v2/katz/results/claude/coefs_full_fit_justice_level_1980_2014_argued.csv"
+        },
+        {
+          "sentence": "re-run oral-argument features only on terms where per-docket coverage is >= 90% (from about OT2004)",
+          "problem": "Low confidence, and the evidence is outside the listed sources. In the K16 coverage files (Oyez plus supremecourt.gov, which is looser than the strict per-docket rule), several terms after 2004 are below 90%: 2005 0.84, 2009 0.89, 2011 0.85, 2013 0.89, 2014 0.86, 2015 0.84, 2017 0.80. Only the pooled 2004-2014 share is about 0.90.",
+          "correct": "Per-term coverage of at least 90% is not continuous from OT2004. Only the pooled 2004-2014 coverage is about 90%.",
+          "source": "/Users/olgavlasova/scotus-predict-rerun/katz/k16/oa_oyez_coverage.csv, oa_scotusgov_coverage.csv"
+        }
+      ],
+      "missing": [
+        "Bottom line and Why-3: the K16 comparison (0.1979 vs K10 0.2052) uses the old all-cases/reverse metric (n = 2,327). It is not comparable to the C1 primary numbers (K10 0.2231 on argued/petitioner, n = 2,250), and the report does not say so.",
+        "Kalshi argument-day row: the base rate (0.2048) beats every model, including the 'best model' KC2 (0.2055). At arg, d30 and d7 the KC models are within about 0.005 of the base rate.",
+        "Why-1 says K10's advantage rests on 'fields your rules forbid'. The bug hunt notes that the SG merits amicus is real pre-argument information (filed before argument). It was dropped only because Oyez coverage marks argued vs not-argued, not because it is post-decision. The bug hunt also says changing this would need a new registered trial.",
+        "The forward Kalshi comparison uses prices from the v2 freeze (2026-10-12 10:37 PT), not prices at the C1 freeze time (2026-10-13 21:21 PT).",
+        "Verified as correct (no action): every selection-table cell (WF, CPCV, accuracy, terms beaten, DSR, secondary), base rate 0.2306, the gate values (p_holm 1.0, McNemar 66/98 with p_holm 0.046, PBO 0.0 vacuous, CPCV 0.2265 vs 0.2199), all holdout cells (772/800), Kalshi n of 18/29/36 and every other Kalshi cell, tracker 14/4 and 12/2 with Brier about 0.39 vs 0.11-0.13, coefficient 0.27, MQ pooled r = -0.9506, N = 37, the 7 KC1 forward flags and names, the forward sha256s, and the commit hashes and their descriptions."
+      ]
+    },
+    {
+      "lens": "claims",
+      "errors": [
+        {
+          "sentence": "The only notable improvement anywhere in the project so far is the box agent's oral-argument trial K16 (0.1979 vs K10 0.2052 on 1990-2014), which did not pass its own significance gate and ran under a waiver of the 90% transcript-coverage rule.",
+          "problem": "Wrong and out of date. The box's Amendment 6 evaluation finished at 20:35 PT, before this report, and K24 scored lower than K16 (0.1972). K25 (0.1983) and K17 (0.1984) are about as good as K16, so K16 is not the only notable trial. The 0.1979 vs 0.2052 figures also use the old metric (all cases, reverse, n = 2,327), not this report's primary metric (argued cases, petitioner wins), and the sentence doesn't say so.",
+          "correct": "On the secondary metric (all cases, reverse, 1990-2014): K24 0.1972, K16 0.1979, K25 0.1983, K17 0.1984, against K10 0.2052. None passes Holm: K24/K25 p_holm 0.146, and K16 p_holm 0.303 in the latest N = 32 family. K24/K25 used a companion coverage rule (97.5%), not the K16/K17 waiver. K10 stays.",
+          "source": "~/scotus-predict-rerun/katz-a6/STATUS_K24.md; katz-a6/eval_k2425/selection_1990_2014.csv and verdict.json; ~/scotus-predict-rerun/katz/eval_k1617/selection_1990_2014.csv"
+        },
+        {
+          "sentence": "K16 (question counts) is the one trial that moved Brier materially (0.1979), but it is not significant after Holm (p 0.13), its DSR (0.97 at N = 26) would be lower at N = 37, and it used transcripts below your 90% coverage rule.",
+          "problem": "K16 is not 'the one trial': K17 (0.1984), K24 (0.1972) and K25 (0.1983) moved Brier by the same amount or more. The p 0.13 and DSR 0.97 come from the superseded N = 26 family. The box's latest evaluation has the updated values.",
+          "correct": "K24 0.1972, K16 0.1979, K25 0.1983, K17 0.1984 (secondary metric). Latest family: K16 p_sign_holm 0.303 and DSR_N32 0.960; K24 p_holm 0.146 and DSR_N32 0.926.",
+          "source": "katz-a6/eval_k2425/selection_1990_2014.csv; katz/eval_k1617/selection_1990_2014.csv"
+        },
+        {
+          "sentence": "Kalshi ... | 30 days before decision | 29 | **0.095** | 0.199 (KC1) | 0.208 | 0.203 |",
+          "problem": "Rounding error: Kalshi's d30 Brier is 0.094457, which rounds to 0.094. 0.095 comes from rounding 0.0945 a second time.",
+          "correct": "0.094",
+          "source": "results/claude/HOLDOUT_kalshi_settled_claude.csv (d30,kalshi brier 0.09445707758620692)"
+        },
+        {
+          "sentence": "| 7 days before decision | 36 | **0.081** | 0.192 (K10s) | 0.193 (reproduces Amendment 2) | 0.203 |",
+          "problem": "Rounding error: Kalshi's d7 Brier is 0.080480, which rounds to 0.080, not 0.081.",
+          "correct": "0.080 (0.0805 at 4 d.p., matching Amendment 2's 0.0805)",
+          "source": "results/claude/HOLDOUT_kalshi_settled_claude.csv (d7,kalshi 0.08047963888888889); ~/scotus-predict-rerun/katz/STATUS_K11.md"
+        },
+        {
+          "sentence": "The big misses are the affirmances the model never sees coming (Skrmetti, Moore, the marijuana-gun case, GVG, NPPC, tariffs), where Kalshi had moved to 0.07-0.27.",
+          "problem": "GVG (Gonzalez v. Google) was not an affirmance. SCDB caseDisposition is 5 (vacated and remanded), even though partyWinning = 0. The other five are disposition 2 (affirmed).",
+          "correct": "Call them petitioner losses, or drop GVG from the 'affirmances' list (Gonzalez v. Google: vacated and remanded, Kalshi d7 0.125).",
+          "source": "results/claude/HOLDOUT_kalshi_rows_claude.csv (GVG-24DEC30 scdb_caseDisposition 5.0); HOLDOUT_DISAGREE_settled_claude.csv"
+        },
+        {
+          "sentence": "An independent recomputation matched every number to 1e-16 and a bug hunt found no error",
+          "problem": "Overstated. The recompute found that sharpness_sd differed by 2.0e-5 to 3.2e-5 (a ddof convention). It also could not rebuild the DSR SR-variance pool, because K00-K19 scored on the primary metric were not inputs. Only internal consistency was checked (one implied SR0 = 0.4678). PBO matched (0.0).",
+          "correct": "The recompute matched every selection statistic to within 1.1e-16, except sharpness_sd (ddof convention). The DSR pool variance was checked for internal consistency only, not rebuilt. The bug hunt found no bug.",
+          "source": "results/claude/selection_verification_2026-10-13.json (recompute findings 5 and 13)"
+        },
+        {
+          "sentence": "Removing the post-decision issue/lawType codes and the SG-amicus flags (rules 1 and \"not argued = missing\") costs ~0.006 Brier on argued cases; about half of it is the SG-amicus flags (bug hunt). K10's advantage partly rests on fields your rules forbid.",
+          "problem": "The size and the half-from-SG split are supported (0.0034 of the 0.0064 pooled gap). But the bug hunt says the SG merits amicus is real pre-argument information, filed before argument. It was dropped only because Oyez coverage made its presence encode 'argued', and restoring it would need a new registered trial. So about half of K10's advantage does not rest on information the rules forbid. The sentence also leaves out argument month, the third dropped family, which the bug hunt links to part of the remaining 0.0031.",
+          "correct": "About 0.0034 of the 0.0064 gap comes from SG-amicus cases. That is legitimate pre-argument information lost to an encoding constraint, and a new trial could recover it. The remaining 0.0031 is consistent with losing the issue/law codes (post-decision) and argument month.",
+          "source": "results/claude/selection_verification_2026-10-13.json (bughunt findings 1, 4, and the last finding)"
+        },
+        {
+          "sentence": "Built but not registered: a cert-stage family (...), dropped because the box agent's K21 covers it.",
+          "problem": "Not supported. K21 (Amendment 5, fe89cec; STATUS_K20 labels it 'katz-claude') had no results when the report was written; results/K21 holds only an _in.csv from the run aborted at 19:27. Its feature file has CVSG, merits/cert amicus counts, grant-to-argument days, stays and expedited flags. It has no relists, no IFP and no QP circuit-split wording, and it covers OT2001+ only.",
+          "correct": "It was not registered to avoid duplicating the planned K21. K21 overlaps only partly (CVSG, amicus, timing) and had not been run or evaluated.",
+          "source": "~/scotus-predict-rerun/katz/k21/docket_features.csv (header), k21/COVERAGE.md; katz/results/K21/ (only _in.csv); STATUS_K20.md; AMENDMENT_C1_CLAUDE.md lines 11-14"
+        },
+        {
+          "sentence": "The box agent registered its own Amendments 4-6 (K16/K17 waiver; K20-K23; K24/K25) off GitHub while this work ran.",
+          "problem": "Incomplete, and the attribution is not backed by the STATUS files. STATUS_K20 labels the K20-K23 Amendment 5 (fe89cec) 'katz-claude', and the box's STATUS_K16 treats that as another party ('trial IDs K20-K23 already taken by katz-claude Amendment 5'; STATUS_K24: 'katz-claude files untouched'). The box also registered its own Amendment 5 (b28a8b9, K20/K21 oral-argument trials), which was aborted about 3 minutes in. Neither the report nor the ledger table mentions it, although the ledger notes 'two Amendment 5s'.",
+          "correct": "Amendments 4 and 6 (51f5557, bf8d3ab) and an aborted Amendment 5 (b28a8b9) come from the box agent (STATUS_K16/K24). The registered Amendment 5 (fe89cec, K20-K23) was made on a branch named katz-claude (STATUS_K20). Say whether the aborted b28a8b9 trials became K24/K25 or count separately in N.",
+          "source": "~/scotus-predict-rerun/katz/STATUS_K16.md (19:24 and 19:28 entries), STATUS_K20.md header, katz-a6/STATUS_K24.md; katz/LEDGER_RECONCILIATION.md line 4"
+        },
+        {
+          "sentence": "Ideal points carry real per-justice signal (standardized coefficient 0.27 at the justice level) but add nothing at the case level: the forest already encodes each justice's lagged voting direction.",
+          "problem": "Unsupported as stated. The 0.27 is the coefficient on s x theta (theta oriented by lower-court direction), taken from an in-sample, diagnostic-only full fit on 1980-2014. There is no standard error or test, so 'real' is untested. The mechanism ('the forest already encodes lagged voting direction') is not tested in any result or in the verification. The only hint is that the lp coefficient falls from 0.62 to 0.47 when theta is added.",
+          "correct": "In a diagnostic in-sample fit, the standardized s x theta coefficient is 0.27 (lp 0.62 -> 0.47). KC2 vs KC1 changes WF Brier by +0.0003 and CPCV by -0.0004. Present the overlap with the forest's lag features as a hypothesis.",
+          "source": "results/claude/coefs_full_fit_justice_level_1980_2014_argued.csv; katz/claude/claude_eval.py (diagnostics block); selection_1990_2014.csv"
+        },
+        {
+          "sentence": "Against K10: every new trial is worse, on the selection window, on CPCV, and on the holdout.",
+          "problem": "There is no CPCV number for K10 as recorded (the selection table shows '-'). The CPCV comparison is only against K10s.",
+          "correct": "Worse than K10 on WF 1990-2014 and the holdout; worse than K10s on CPCV (0.2259-0.2265 vs 0.2199).",
+          "source": "results/claude/selection_1990_2014.csv (K10 cpcv columns empty)"
+        },
+        {
+          "sentence": "Decide on K16/K17: either accept the waiver of rule 5 and evaluate them on the Kalshi-aligned metric and the same-time Kalshi comparison, or re-run oral-argument features only on terms where per-docket coverage is >= 90% (from about OT2004).",
+          "problem": "(1) 'Rule 5' means two different things in the report. Here and in the ledger it is the 90% transcript-coverage rule. Earlier, 'your rule 5' means C1's 'no transcript features in this amendment'. (2) 'from about OT2004' is not supported. Strict per-docket coverage under Amendment 3 is below 90% in OT2004 (~83%), 2005 (~87%), 2013 (~81%) and 2014 (~69%). (3) It ignores that K24/K25 already ran oral-argument features under a 97.5% companion coverage rule.",
+          "correct": "Name the rule explicitly (90% per-docket transcript coverage). Drop 'from about OT2004' or recompute per-term coverage. Mention K24/K25 (companion rule, K24 0.1972, Holm p 0.146).",
+          "source": "AMENDMENT_C1_CLAUDE.md rule 5; LEDGER_RECONCILIATION.md note 2; ~/scotus-predict-rerun/katz/k16/missing_classified.csv vs oa_oyez_coverage.csv (per-term counts); katz-a6/STATUS_K24.md"
+        },
+        {
+          "sentence": "Forward (OT2026, frozen 2026-10-13 21:21 PT with sha256 in katz/claude/FORWARD_CLAUDE.md): KC1 differs from the Kalshi price by >= 0.25 on 7 of 25 markets",
+          "problem": "One of the 25 markets (KXSCOTUSAR15-30JAN) has no Kalshi price, so the denominator is 24. The Kalshi price is the last price at the v2 freeze (2026-10-12 10:37 PT), not at the 2026-10-13 freeze. The forward model is still K10 (6 of 24 flagged), not KC1.",
+          "correct": "KC1 is >= 0.25 from the 2026-10-12 10:37 Kalshi last price on 7 of 24 priced markets (K10, the forward model: 6 of 24).",
+          "source": "katz/claude/FORWARD_OT2026_claude.csv; FORWARD_CLAUDE.md; DISAGREE_OT2026_claude.csv; verdict.json used_for_forward = K10"
+        },
+        {
+          "sentence": "Selection metric ... argued cases only, label = petitioner wins (SCDB partyWinning), 1990-2014 (n = 2,250).",
+          "problem": "n counts dockets, not cases: the 2,250 dockets cover 2,030 distinct cases, with consolidated dockets counted separately.",
+          "correct": "n = 2,250 argued dockets (2,030 cases); 1 docket with partyWinning = 2 excluded.",
+          "source": "selection_verification_2026-10-13.json (recompute finding 2)"
+        },
+        {
+          "sentence": "Branch base. katz-claude-2 starts at 59b4d24 (Amendment 3). It does not contain 02c7d81 (Amendment 3's results), which is on katz-improve; nothing here depends on it.",
+          "problem": "The git facts are correct: merge-base is 59b4d24, and 02c7d81 is only on origin/katz-improve (local katz-improve is at 59b4d24). But 'nothing here depends on it' is slightly overstated. C1's DSR SR-variance pool uses the recorded K16-K19 results (the outputs of Amendment 3 and the waiver), read from ~/scotus-predict-rerun rather than from git.",
+          "correct": "Nothing here depends on the 02c7d81 commit itself. The DSR pool does use K16-K19's recorded predictions from ~/scotus-predict-rerun.",
+          "source": "git merge-base / git branch -a --contains 02c7d81; AMENDMENT_C1_CLAUDE.md lines 102-104; verdict.json dsr_sr_variance_from"
+        },
+        {
+          "sentence": "Commits (katz-claude-2, pushed; main and katz-improve untouched) 08431bd pre-registration; b821c1e ...; 13dce9a forward freeze.",
+          "problem": "The list leaves out bcf61be (trial ledger reconciliation, 20:22 PT). The repo has no 'main' branch; the default branch is master (e34e372, untouched). Pushed is correct: origin/katz-claude-2 = 13dce9a.",
+          "correct": "Add bcf61be (ledger reconciliation), and say master instead of main.",
+          "source": "git log katz-claude-2; git rev-parse master origin/master"
+        },
+        {
+          "sentence": "Three adversarial reviews before registration found and fixed leaks that would have re-encoded \"argued vs summary disposition\" (availability flags as regressors, summary-disposition \"grants\", post-grant clerk notes in old QP PDFs).",
+          "problem": "Mostly supported in code (stage2.py, parse_dockets.py). But the QP clerk-notes leak was post-grant, sometimes post-decision, text such as DIG and restored-for-reargument notes. It was not a re-encoding of argued vs summary disposition; that issue was qp_have/QP presence.",
+          "correct": "Describe the clerk-notes fix as removing post-grant/post-decision text, separate from the argued/summary encoding fixes (availability flags, summary-disposition grants, qp_have).",
+          "source": "katz/claude/parse_qp.py docstring lines 11-16, 71-78; features/qp_coverage.txt; stage2.py lines 5-7"
+        }
+      ],
+      "missing": [
+        "Brief gate missing: Holm McNemar vs always-reverse/always-petitioner results are never given, even though the brief lists this gate. From selection_1990_2014.csv, WF: KC1 55/53 (p_holm 1.0), KC2 42/50 (1.0), KC3 111/107 (1.0), KC4 109/111 (1.0); K10 96/55 (p_holm 0.0064); K10s 133/99 (0.150). CPCV vs AR: all KC p_holm 1.0. Always-petitioner accuracy is 1,436/2,250 = 63.8%, so KC2 (63.5%) and KC4 (63.7%) are below the trivial rule and KC1 (63.9%) and KC3 (64.0%) are level with it. On the holdout, KC1's accuracy (0.6697) equals the always-petitioner rate (517/772).",
+        "Brief gate missing: the report links the calibration plot but never says what it shows. WF ECE: K10 as recorded 0.061 (overconfident; mean P 0.69 vs a 0.638 base rate), K10s 0.024, KC1-KC4 0.025-0.034. CPCV ECE is 0.020-0.027. The holdout calibration plot (results/claude/HOLDOUT_calibration_claude.png), which C1 registered, is not mentioned.",
+        "PBO caveat incomplete: the report calls PBO 0.0 vacuous but omits the verification's challenger-only diagnostic PBO of 0.40 (WF) and 0.586 (CPCV). The CPCV value is above the 0.5 threshold. Source: selection_verification_2026-10-13.json.",
+        "Box agent's Amendment 6 results (K24 0.1972, K25 0.1983; PBO 0.186; DSR_N32 0.926/0.941; Holm p 0.146; K10 stays) are missing. They finished at 20:35 PT, before the report, and change the 'only notable improvement' claim and next step 1. Source: katz-a6/STATUS_K24.md, eval_k2425/.",
+        "Disagreement tracker: the registered hypothetical paper P&L is left out. At d30 it is K10 +0.54 and KC1 -0.88; at d7 it is K10 +0.26 and KC1 -0.58. K10's flagged-market P&L is positive at both times, which matters for the Kalshi-edge question even though it is small-n and was never traded. Source: HOLDOUT_DISAGREE_summary_claude.csv.",
+        "No explicit statement that K10 stays the forward model (verdict.json: replaces_K10 = false, used_for_forward = K10). The forward section discusses KC1 instead.",
+        "Kalshi argument-morning context: at the arg time (n = 18), no model beats the prior-10-term base rate (0.2048). The best model, KC2, scores 0.2055, and K10 scores 0.2217. Source: HOLDOUT_kalshi_settled_claude.csv.",
+        "K10s's DSR_cpcv of 0.955 (just above the 0.95 gate) appears in the table with no explanation. Its WF DSR is 0.84, and it is a non-selectable comparator, as the verification notes.",
+        "Holdout-exposure caveat leaves out C1's own pre-registration peek. The C1 honesty log says the label-availability counts printed the 2015-2025 0/1 split (517 petitioner wins of 772) before registration. Source: AMENDMENT_C1_CLAUDE.md lines 22-23.",
+        "Next steps leave out the bug hunt's main lead: SG merits-amicus information is genuine pre-argument signal (about half of the KC1 gap) and could be restored with an argued-neutral encoding as a new registered trial. Source: selection_verification_2026-10-13.json, bughunt final finding."
+      ]
+    }
+  ],
+  "workflowProgress": [
+    {
+      "type": "workflow_phase",
+      "index": 1,
+      "title": "Check"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 1,
+      "label": "factcheck:numbers",
+      "phaseIndex": 1,
+      "phaseTitle": "Check",
+      "agentId": "a32a1ad0a91c2c77f",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791951771643,
+      "queuedAt": 1791951771612,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "Fact-check /Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2/katz/CLAUDE_REPORT.md (draft, paper-only SCOTUS research). Sources of truth: /Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-32…",
+      "promptFramed": true,
+      "lastProgressAt": 1791952210692,
+      "tokens": 182820,
+      "toolCalls": 41,
+      "durationMs": 439049,
+      "resultPreview": "{\"errors\":[{\"sentence\":\"| 30 days before decision | 29 | **0.095** | 0.199 (KC1) | 0.208 | 0.203 |\",\"problem\":\"The Kalshi d30 Brier is rounded wrong. The source value is 0.094457, which rounds to 0.094. The 0.095 comes from rounding the log's printed 0.0945 a second time. n, best model, K10 and base rate in this row are all correct.\",\"correct\":\"0.094 (0.0944571; the log prints 0.0945)\",\"source\":\"s…"
+    },
+    {
+      "type": "workflow_agent",
+      "index": 2,
+      "label": "factcheck:claims",
+      "phaseIndex": 1,
+      "phaseTitle": "Check",
+      "agentId": "aa7d125ca6fb2b1f9",
+      "model": "claude-opus-5-5",
+      "state": "done",
+      "startedAt": 1791951771643,
+      "queuedAt": 1791951771613,
+      "attempt": 1,
+      "lastToolName": "StructuredOutput",
+      "promptPreview": "Fact-check /Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-3206-4266-9156-bd4441ce8c9d/scratch-2026-10-12-d8df33/scotus-predict-v2/katz/CLAUDE_REPORT.md (draft, paper-only SCOTUS research). Sources of truth: /Users/olgavlasova/Library/Application Support/Claude/scratch-workspaces/205b7159-dd36-4891-b166-00b588a26153/bae797a9-32…",
+      "promptFramed": true,
+      "lastProgressAt": 1791952305905,
+      "tokens": 192290,
+      "toolCalls": 44,
+      "durationMs": 533553,
+      "resultPreview": "{\"errors\":[{\"sentence\":\"The only notable improvement anywhere in the project so far is the box agent's oral-argument trial K16 (0.1979 vs K10 0.2052 on 1990-2014), which did not pass its own significance gate and ran under a waiver of the 90% transcript-coverage rule.\",\"problem\":\"Wrong and out of date. The box's Amendment 6 evaluation finished at 20:35 PT, before this report, and K24 scored lower …"
+    }
+  ],
+  "totalTokens": 375110,
+  "totalToolCalls": 85
+}
