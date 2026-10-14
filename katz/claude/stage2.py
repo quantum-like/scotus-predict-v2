@@ -1,4 +1,4 @@
-"""Amendment 6 (Claude) stage 2 (katz/AMENDMENT_6_CLAUDE.md): stacked logistic models on stage-1 per-justice P(reverse), fit walk-forward (WF,
+"""Amendment C1 (Claude) stage 2 (katz/AMENDMENT_C1_CLAUDE.md): stacked logistic models on stage-1 per-justice P(reverse), fit walk-forward (WF,
 prior 10 terms, Oct-1 embargo) or by purged/embargoed CPCV (10 term groups, 2 test groups, 45 splits, 9 paths). Library for
 claude_eval.py and holdout_once_claude.py. Paper only. Reads stage-1 preds and katz/claude/features/*.csv; SCDB dates read-only from
 $SCOTUS_ROOT. Outcomes of terms >= 2015 are used only as walk-forward training rows for later terms (as K10's own P); no metric on them here.
@@ -19,7 +19,7 @@ lg = lambda p: np.log(np.clip(p, EPS, 1 - EPS) / (1 - np.clip(p, EPS, 1 - EPS)))
 FAM = {"A": ["sA_theta", "sA_med", "s_lc"],
        "B": ["cvsg", "amicus_cert", "relists_log", "log_days_to_grant", "ifp", "qp_split"],
        "C": ["lc_dc", "s_lc_dc"]}
-MODELS = {"K25": ([], []), "K26": (["A"], []), "K27": ([], ["C"]), "K28": (["A"], ["C"])}   # family B (cert stage) built but NOT registered: overlaps the other Amendment 5's K21
+MODELS = {"KC1": ([], []), "KC2": (["A"], []), "KC3": ([], ["C"]), "KC4": (["A"], ["C"])}   # family B (cert stage) built but NOT registered: overlaps the other Amendment 5's K21
 GROUPS = [(1990, 1992), (1993, 1995), (1996, 1998), (1999, 2001), (2002, 2004), (2005, 2006), (2007, 2008), (2009, 2010), (2011, 2012), (2013, 2014)]
 DOCKET_ERA, QP_ERA = 2000, 2002   # supremecourt.gov online dockets exist for docket years >= 2000 (00-xxxx), QP PDFs for >= 2002
 # sub-family -> (regressor columns, availability column used only for activation); s_lc and ifp are always on

@@ -1,9 +1,9 @@
-"""Amendment 6 (Claude): the ONE read of the 2015-2025 holdout (already SEEN under Amendment 2) and the 36 settled Kalshi markets.
+"""Amendment C1 (Claude): the ONE read of the 2015-2025 holdout (already SEEN under Amendment 2) and the 36 settled Kalshi markets.
 Order: (1) refuse if a lock or any HOLDOUT_* output exists; (2) require the verdict, INPUT_SHA256.json, the amendment and every
 katz/claude/*.py to be committed and unmodified, and every pinned input (incl. SCDB and the Kalshi files) to match its hash; (3) take an
 exclusive lock (O_EXCL) recording time, git HEAD and this file's sha256 BEFORE any label is loaded; (4) assert every count (772 primary,
 800 secondary, 36 at d7) before anything is printed; (5) score, write, plot. Nothing changes after; a crash leaves the lock (no re-read).
-Scores K10 (as recorded), K10s, K25-K28 and the prior-10-term base rate on PRIMARY (argued cases, petitioner wins) and SECONDARY (all cases,
+Scores K10 (as recorded), K10s, KC1-KC4 and the prior-10-term base rate on PRIMARY (argued cases, petitioner wins) and SECONDARY (all cases,
 reverse); on the settled Kalshi markets vs Kalshi at three fixed times (argument-day morning, 30 and 7 days before the decision; d30/d7 are
 anchored on the decision date, ex post, for both sides). Only argument morning approximates the model's information set (its P is frozen
 before argument); d30/d7 give Kalshi the argument. A price at arg/d30 counts only if ask - bid <= 0.20 (d7 = Amendment 2's d7_mid, as
@@ -16,7 +16,7 @@ REPO = os.path.dirname(os.path.dirname(HERE)); OUT = os.path.join(REPO, "katz", 
 LOCK = os.path.join(OUT, "HOLDOUT_READ_LOCK_claude.json")
 assert not os.path.exists(LOCK) and not [f for f in os.listdir(OUT) if f.startswith("HOLDOUT_")], "holdout already read (or a read started): refusing"
 git = lambda *a: subprocess.run(["git", *a], cwd=REPO, capture_output=True, text=True)
-PINNED = ["katz/results/claude/verdict.json", "katz/results/claude/INPUT_SHA256.json", "katz/AMENDMENT_6_CLAUDE.md", "katz/claude"]
+PINNED = ["katz/results/claude/verdict.json", "katz/results/claude/INPUT_SHA256.json", "katz/AMENDMENT_C1_CLAUDE.md", "katz/claude"]
 assert not git("status", "--porcelain", "--", *PINNED).stdout.strip(), "verdict, input hashes, amendment and katz/claude code must be committed and unmodified"
 assert git("ls-files", "--error-unmatch", "katz/results/claude/verdict.json", "katz/claude/holdout_once_claude.py", "katz/claude/stage2.py").returncode == 0
 sha = lambda p: hashlib.sha256(gzip.open(p).read() if p.endswith(".gz") else open(p, "rb").read()).hexdigest()
@@ -28,9 +28,9 @@ os.write(fd, json.dumps({"started": datetime.datetime.now().astimezone().isoform
                          "script_sha256": sha(os.path.abspath(__file__))}).encode()); os.close(fd)
 
 import stage2 as S
-MODELS = ["K10", "K10s", "K25", "K26", "K27", "K28"]; N_REG = {"primary_argued_partyWinning": 772, "secondary_all_reverse": 800}
+MODELS = ["K10", "K10s", "KC1", "KC2", "KC3", "KC4"]; N_REG = {"primary_argued_partyWinning": 772, "secondary_all_reverse": 800}
 P = pd.read_csv(os.path.join(LOC, "P_wf_all.csv.gz"), index_col=0)
-_, C = S.frames(os.path.join(LOC, "K25", "preds.csv.gz"), families=())
+_, C = S.frames(os.path.join(LOC, "KC1", "preds.csv.gz"), families=())
 T = C.term; H = {}
 for lab, ycol in (("primary_argued_partyWinning", "y"), ("secondary_all_reverse", "y_rev")):
     y = C[ycol]; h = pd.DataFrame({"term": T, "y": y}).join(P[MODELS]); h = h[h.term.between(2015, 2025) & h.y.notna()].dropna(subset=MODELS)
@@ -81,7 +81,7 @@ pd.concat(KS, names=["time"]).to_csv(os.path.join(OUT, "HOLDOUT_kalshi_settled_c
 k.to_csv(os.path.join(OUT, "HOLDOUT_kalshi_rows_claude.csv"), index=False)
 D.to_csv(os.path.join(OUT, "HOLDOUT_DISAGREE_settled_claude.csv"), index=False); DS.to_csv(os.path.join(OUT, "HOLDOUT_DISAGREE_summary_claude.csv"))
 pd.set_option("display.width", 250)
-for lab in RES: print(f"HOLDOUT 2015-2025 {lab} (SEEN before: Amendment 2's read; this is Amendment 6's single read)\n", RES[lab].round(4).to_string())
+for lab in RES: print(f"HOLDOUT 2015-2025 {lab} (SEEN before: Amendment 2's read; this is Amendment C1's single read)\n", RES[lab].round(4).to_string())
 for tau in KS: print(f"SETTLED KALSHI at {tau} (markets with a valid {tau} price; inside the holdout, SEEN)\n", KS[tau].round(4).to_string())
 print("DISAGREEMENT TRACKER (|gap| >= 0.25; scored, never traded)\n", DS.round(4).to_string() if len(DS) else "no flagged markets")
 try:

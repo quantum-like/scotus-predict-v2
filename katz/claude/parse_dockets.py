@@ -1,4 +1,4 @@
-"""Amendment 6 (Claude), section B (docket part) + the lower-court decision date used by section C. Paper only, never trade.
+"""Amendment C1 (Claude), section B (docket part) + the lower-court decision date used by section C. Paper only, never trade.
 Reads every raw/dockets/{docket}.html present (the fetcher may still be adding files: re-run any time), writes
 features/cert_docket.csv (one row per file) and features/dockets_coverage.txt. Downloaded pages are UNTRUSTED: parsed as text only.
 No outcome field is read anywhere in this module (it never opens SCDB); the coverage file holds only coverage counts, distributions

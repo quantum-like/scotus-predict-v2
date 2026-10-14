@@ -1,6 +1,6 @@
-"""Amendment 6 (Claude) stage-1 runner = katz_trial.py (katz-improve) + K25 (strict20) + read-only input root. Paper only.
+"""Amendment C1 (Claude) stage-1 runner = katz_trial.py (katz-improve) + KC1 (strict20) + read-only input root. Paper only.
 Inputs are read from $SCOTUS_ROOT (default ~/scotus-predict-rerun): data/, src/, pending_inputs/ (never written). Output default
-katz/claude/results_local/<trial>. strict20 never loads Oyez and asserts 862 features with no forbidden prefix (AMENDMENT_6_CLAUDE.md).
+katz/claude/results_local/<trial>. strict20 never loads Oyez and asserts 862 features with no forbidden prefix (AMENDMENT_C1_CLAUDE.md).
 Original docstring:
 katz-improve trial runner (KATZ_PREREG.md). Paper only. Lives in ~/scotus-predict-rerun/katz/ on the Mac.
 Reads ../data, ../src (patched copy), ../pending_inputs, ./oyez (optional); writes only to --out.
@@ -18,7 +18,7 @@ from legacy_model_data import party_map_data
 SPEC = {"K00": ("rf", "orig", []), "K01": ("rf", "orig", ["strict"]), "K02": ("rf", "none", []),
         "K06": ("gbm", None, []), "K07": ("rf", "orig", ["free"]), "K08": ("rf", "orig", ["free", "oa"]), "K09": ("mlp", None, ["free"]), "K10": ("rf", "orig", ["free", "pendfix"]),
         "K11": ("rf", "orig", ["free", "missaug"]), "K15": ("hier", None, ["free", "pendfix"]),
-        "K25": ("rf", "orig", ["free", "pendfix", "strict20"])}   # Amendment 6 (Claude): stage 1 of K25-K28
+        "KC1": ("rf", "orig", ["free", "pendfix", "strict20"])}   # Amendment C1 (Claude): stage 1 of KC1-KC4
 ap = argparse.ArgumentParser(); ap.add_argument("--trial", required=True, choices=SPEC); ap.add_argument("--n-jobs", type=int, default=-1)
 ap.add_argument("--max-term", type=int); ap.add_argument("--min-term", type=int, help="smoke only"); ap.add_argument("--out")
 a = ap.parse_args(); MODEL, CW, FS = SPEC[a.trial]; OUT = a.out or os.path.join(HERE, "results_local", a.trial); os.makedirs(OUT, exist_ok=True)
@@ -42,7 +42,7 @@ raw = get_raw_scdb_data(mp); os.remove(mp)
 F = preprocess_raw_data(raw, include_direction=True).astype(numpy.float32)
 drop = [f for f in F.columns if f.startswith(("term_", "natural_court", "decision_month_")) or f in ("decision_delay",)]
 if "strict" in FS: drop += [f for f in F.columns if f.startswith(("issue_", "law_type_", "law_supp_"))]
-if "strict20" in FS: drop += [f for f in F.columns if f.startswith(("issue_", "law_type_", "argument_month_"))]   # Amendment 6 (Claude): post-decision codes + argued status
+if "strict20" in FS: drop += [f for f in F.columns if f.startswith(("issue_", "law_type_", "argument_month_"))]   # Amendment C1 (Claude): post-decision codes + argued status
 F = F.drop(columns=drop); assert not any(c.startswith(("decision", "term", "natural_court")) for c in F.columns)
 term = raw.term.values.astype(int); y = raw.justice_outcome_disposition.astype(int).values
 if "free" in FS:
@@ -56,7 +56,7 @@ if "free" in FS:
     F["src_prior_rev_rate"] = ((x.cs.fillna(0) + 3) / (x.cn.fillna(0) + 4)).values.astype("float32")
     F["cert_conflict"] = raw.certReason.isin([2, 3, 4, 5, 6]).astype("float32").values
     op = os.path.join(HERE, "oyez", "oyez_case_features.csv")
-    if os.path.exists(op) and "strict20" not in FS:   # Amendment 6 (Claude): strict20 never loads Oyez (argued-status encoding; K18's SG position)
+    if os.path.exists(op) and "strict20" not in FS:   # Amendment C1 (Claude): strict20 never loads Oyez (argued-status encoding; K18's SG position)
         oy = pandas.read_csv(op, dtype={"docket": str}); oy["docket"] = oy.docket.str.strip()
         cols = ["sg_amicus_pet", "sg_amicus_resp", "oyez_found"] + ([k for k in oy.columns if k.startswith("oa_")] if "oa" in FS else [])
         k = raw[["term", "docket"]].astype({"docket": str}).assign(docket=lambda d: d.docket.str.strip()).merge(oy[["term", "docket"] + cols].drop_duplicates(["term", "docket"]), on=["term", "docket"], how="left")
@@ -77,7 +77,7 @@ if "missaug" in FS:   # Amendment 2 K11: mask blank-prone groups at the pending 
 if "pendfix" in FS:   # Amendment 1: drop features unobservable for pending rows, for all rows
     pf = [f for f in F.columns if f.startswith(("lc_outcome_", "lc_disagreement_", "cert_reason_", "case_origin_", "law_supp_"))] + [f for f in ("cert_conflict", "oyez_found") if f in F.columns]
     F = F.drop(columns=pf); drop += pf
-if "strict20" in FS:   # Amendment 6 (Claude) guard: registered width and no forbidden prefix
+if "strict20" in FS:   # Amendment C1 (Claude) guard: registered width and no forbidden prefix
     bad = [c for c in F.columns if c.startswith(("issue_", "law_type_", "law_supp_", "argument_month_", "sg_amicus_", "oyez_", "decision", "lc_outcome_", "cert_reason_", "lc_disagreement_", "case_origin_"))]
     assert not bad and F.shape[1] == 862, (F.shape, bad[:5])
 log(f"features {F.shape}; dropped {len(drop)}")

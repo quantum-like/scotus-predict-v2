@@ -1,4 +1,4 @@
-"""K23 lower-court ideology, circuit level (AMENDMENT_6_CLAUDE.md section C). Paper only. Public pre-decision data only.
+"""K23 lower-court ideology, circuit level (AMENDMENT_C1_CLAUDE.md section C). Paper only. Public pre-decision data only.
 Run: python -I -B fjc_lc_ideology.py [--input-root ~/scotus-predict-rerun]. Re-runnable: re-run whenever parse_dockets.py rewrites
 features/cert_docket.csv (dockets without a valid date there use the proxy).
 Reads (read-only): <input-root>/data/SCDB_2026_01_justiceCentered_Docket.csv and <input-root>/pending_inputs/pending_cases_scdb_rows.csv,

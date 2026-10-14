@@ -1,8 +1,8 @@
-"""Amendment 6 (Claude) selection and gates (katz/AMENDMENT_6_CLAUDE.md). 1990-2014 only: outcomes of terms >= 2015 are masked before any metric.
-Primary metric: argued cases, label petitioner wins (partyWinning). Challengers K25-K28 (stage 2 on the strict20 forest). Comparator for the
+"""Amendment C1 (Claude) selection and gates (katz/AMENDMENT_C1_CLAUDE.md). 1990-2014 only: outcomes of terms >= 2015 are masked before any metric.
+Primary metric: argued cases, label petitioner wins (partyWinning). Challengers KC1-KC4 (stage 2 on the strict20 forest). Comparator for the
 gates: K10s = K10's own per-justice P through the identical stage 2 (no new features), so re-targeting the label earns nothing; K10 as
 recorded (k11_eval protocol) is reported alongside. WF and purged/embargoed CPCV series; one-sided sign test and McNemar vs K10s (Holm over 4),
-McNemar vs always-petitioner (Holm over all reported models), PBO by CSCV (WF and CPCV), DSR with N = 35 (WF and CPCV), ECE, calibration plot.
+McNemar vs always-petitioner (Holm over all reported models), PBO by CSCV (WF and CPCV), DSR with N = 37 (WF and CPCV), ECE, calibration plot.
 Writes katz/results/claude/ and katz/claude/results_local/P_wf_all.csv.gz (P for all terms; 2015+ not scored here). Usage: python -B claude_eval.py"""
 import gzip, hashlib, itertools, json, os, sys
 import numpy as np, pandas as pd
@@ -16,7 +16,7 @@ OVR = {k: v for k, v in os.environ.items() if k.startswith("CLAUDE_")}; DRY = bo
 OUT = os.environ.get("CLAUDE_OUT", OUT0); LOC = os.environ.get("CLAUDE_LOC", os.path.join(HERE, "results_local"))
 assert not (DRY and os.path.abspath(OUT) == os.path.abspath(OUT0)), "dry run must not write to katz/results/claude"
 os.makedirs(OUT, exist_ok=True); os.makedirs(LOC, exist_ok=True)
-N_TRIALS = 35; CH = ["K25", "K26", "K27", "K28"]; REF = "K10s"; GPOP = [REF] + CH; POP = ["K10"] + GPOP; RES = os.path.join(S.ROOT, "katz", "results")
+N_TRIALS = 37; CH = ["KC1", "KC2", "KC3", "KC4"]; REF = "K10s"; GPOP = [REF] + CH; POP = ["K10"] + GPOP; RES = os.path.join(S.ROOT, "katz", "results")
 N_HOLD_REG = {"primary_argued_partyWinning": 772, "secondary_all_reverse": 800}   # registered holdout sizes (counts only)
 
 # --- K10 and earlier trials exactly as recorded (katz_eval.build + k11_eval.cal: Platt on prior 10 terms, embargoed) ---
@@ -41,28 +41,28 @@ C10 = mk("K10")
 if not DRY:
     assert "DONE" in open(os.path.join(HERE, "raw", "fetch.log")).read(), "supremecourt.gov fetch not finished"
     th = pd.read_csv(os.path.join(S.FEAT, "pit_theta.csv")); assert set(range(1980, 2027)) <= set(th.term), "pit_theta does not cover 1980-2026"
-    assert json.load(open(os.path.join(LOC, "K25", "run_meta.json")))["n_features"] == 862, "K25 stage 1 is not the 862-feature strict20 set"
+    assert json.load(open(os.path.join(LOC, "KC1", "run_meta.json")))["n_features"] == 862, "KC1 stage 1 is not the 862-feature strict20 set"
 def sha(p):   # .gz files are hashed on their decompressed bytes (the gzip header carries a timestamp)
     return hashlib.sha256(gzip.open(p).read() if p.endswith(".gz") else open(p, "rb").read()).hexdigest()
-INPUTS = {f"katz/claude/results_local/K25/{f}": os.path.join(LOC, "K25", f) for f in ("preds.csv.gz", "run_meta.json", "features.json")}
+INPUTS = {f"katz/claude/results_local/KC1/{f}": os.path.join(LOC, "KC1", f) for f in ("preds.csv.gz", "run_meta.json", "features.json")}
 INPUTS |= {f"katz/claude/features/{f}": os.path.join(S.FEAT, f) for f in ("pit_theta.csv", "lc_ideology.csv", "cert_docket.csv", "qp_split.csv")}
 INPUTS |= {os.path.join(S.ROOT, p): os.path.join(S.ROOT, p) for p in ("data/SCDB_2026_01_justiceCentered_Docket.csv", "katz/results/K10/preds.csv.gz",
            "katz/kalshi_hist/kalshi_settled_prices.csv", "katz/kalshi_hist/market_map_hist.csv")}
 
-# --- stage 2: K25-K28 on K25's forest; K10s = K10's forest through the same stage 2 (no Z); WF and CPCV ---
-J25, C25 = S.frames(os.path.join(LOC, "K25", "preds.csv.gz"))
+# --- stage 2: KC1-KC4 on KC1's forest; K10s = K10's forest through the same stage 2 (no Z); WF and CPCV ---
+J25, C25 = S.frames(os.path.join(LOC, "KC1", "preds.csv.gz"))
 J10, C10s = S.frames(os.path.join(RES, "K10", "preds.csv.gz"), families=())
 PRIM = C25[C25.term.between(1990, 2014) & C25.y.notna()].index   # primary population: argued cases with a petitioner-wins label
 assert C10.P.reindex(PRIM).notna().all() and set(PRIM) <= set(C10s.index), "K10 lacks P for part of the primary population"
 assert set(C25[C25.term.between(1990, 2014) & C25.y_rev.notna()].index) == set(C10[C10.term.between(1990, 2014) & C10.y.notna()].index), "secondary population differs from K10"
 N_HOLD = {"primary_argued_partyWinning": int((C25.term.between(2015, 2025) & C25.y.notna()).sum()), "secondary_all_reverse": int((C25.term.between(2015, 2025) & C25.y_rev.notna()).sum())}
 if not DRY: assert N_HOLD == N_HOLD_REG, N_HOLD
-coefs = []; WF = {"K10": C10, REF: S.wf(J10, C10s, "K25")}
-for m in CH: WF[m] = S.wf(J25, C25, m, coefs=coefs if m == "K28" else None)
+coefs = []; WF = {"K10": C10, REF: S.wf(J10, C10s, "KC1")}
+for m in CH: WF[m] = S.wf(J25, C25, m, coefs=coefs if m == "KC4" else None)
 Pall = pd.DataFrame({m: WF[m].P for m in POP}); Pall.insert(0, "term", C25.term.reindex(Pall.index).fillna(C10.term)); Pall.insert(1, "docket", C25.docket.reindex(Pall.index))
 Pall.to_csv(os.path.join(LOC, "P_wf_all.csv.gz"), compression={"method": "gzip", "mtime": 0}); INPUTS["katz/claude/results_local/P_wf_all.csv.gz"] = os.path.join(LOC, "P_wf_all.csv.gz")
 HASH = {k: sha(p) for k, p in INPUTS.items() if os.path.exists(p)}; json.dump(HASH, open(os.path.join(OUT, "INPUT_SHA256.json"), "w"), indent=1)
-CP = {"K10": None, REF: S.cpcv(J10, C10s, "K25")} | {m: S.cpcv(J25, C25, m) for m in CH}; CP.pop("K10")
+CP = {"K10": None, REF: S.cpcv(J10, C10s, "KC1")} | {m: S.cpcv(J25, C25, m) for m in CH}; CP.pop("K10")
 
 # --- mask holdout: from here on only 1990-2014 outcomes exist ---
 Y = C25.y.copy(); Y[C25.term >= 2015] = np.nan; T = C25.term                       # PRIMARY: argued, petitioner wins
@@ -90,7 +90,7 @@ def pbo(B):   # = k11_eval CSCV: 1991-2014, 8 groups x 3 terms, 70 complementary
         im = np.isin(grp, isg); ib = Bt[im].mean(); ob = Bt[~im].mean(); best = ib.idxmin()
         rank = (ob > ob[best]).sum() + 1; w_ = rank / (len(ob) + 1); lam.append(np.log(w_ / (1 - w_)))
     return float(np.mean(np.array(lam) <= 0))
-def dsr(s, srs, n=N_TRIALS):   # = k11_eval.dsr with n = 35
+def dsr(s, srs, n=N_TRIALS):   # = k11_eval.dsr with n = 37
     sr = s.mean() / s.std(ddof=1); T_ = len(s); e = .5772156649; v = np.var(srs, ddof=1)
     sr0 = np.sqrt(v) * ((1 - e) * norm.ppf(1 - 1 / n) + e * norm.ppf(1 - 1 / (n * np.e)))
     return float(norm.cdf((sr - sr0) * np.sqrt(T_ - 1) / np.sqrt(1 - skew(s) * sr + (kurtosis(s, fisher=False) - 1) / 4 * sr ** 2))), float(sr)
@@ -125,7 +125,7 @@ for m in POP:
               "cpcv_split_worst": float(cp_split[m].max()), "cpcv_pooled_brier": float(((Q - Y.loc[ix]) ** 2).mean()), "cpcv_logloss": ll(Q, Y.loc[ix]),
               "cpcv_acc": float(okc[m].mean()), "cpcv_ece10": ece(Q, Y.loc[ix])}
         r["cpcv_mcnemar_vs_AR"] = "%d/%d" % mcn(okc[m], ar)[:2]; r["p_cpcv_mcnemar_vs_AR"] = mcn(okc[m], ar)[2]
-        r["DSR_cpcv_N35"], r["SR_cpcv"] = dsr(sk_cp[m], allsr)
+        r["DSR_cpcv_N37"], r["SR_cpcv"] = dsr(sk_cp[m], allsr)
     c2 = pd.DataFrame({"P": WF[m].P, "y": Y2, "term": T}).dropna(); c2 = c2[c2.term.between(1990, 2014)]   # secondary (all cases, reverse label)
     r["sec_all_reverse_mean_term_brier"] = float(((c2.P - c2.y) ** 2).groupby(c2.term).mean().mean()); r["sec_all_reverse_acc"] = float(((c2.P > .5) == (c2.y == 1)).mean()); r["sec_n"] = len(c2)
     r["mcnemar_vs_AR"] = "%d/%d" % mcn(ok[m], ar)[:2]; r["p_mcnemar_vs_AR"] = mcn(ok[m], ar)[2]
@@ -135,7 +135,7 @@ for m in POP:
         r[f"p_sign_vs_{tag}"] = binomtest(w, len(d), alternative="greater").pvalue   # one-sided: challenger better in more terms than chance
         x, y_, p = mcn(ok[m], ok[ref]); r[f"mcnemar_vs_{tag}"] = f"{x}/{y_}"; r[f"p_mcnemar_vs_{tag}"] = p
     if m in CH: dc = (Bcp[m] - Bcp[REF]).dropna(); r["cpcv_terms_better_vs_K10s"] = f"{int((dc < 0).sum())}/{len(dc)}"
-    r["DSR_wf_N35"], r["SR_wf"] = dsr(sk_wf[m], allsr)
+    r["DSR_wf_N37"], r["SR_wf"] = dsr(sk_wf[m], allsr)
     rows[m] = r
 SEL = pd.DataFrame(rows).T
 SEL["p_sign_vs_K10s_holm"] = holm(SEL.loc[CH, "p_sign_vs_K10s"]); SEL["p_mcnemar_vs_K10s_holm"] = holm(SEL.loc[CH, "p_mcnemar_vs_K10s"])
@@ -146,7 +146,7 @@ gates = {"a_sign_vs_K10s_holm_lt_0.05_and_lower_brier": bool(s.p_sign_vs_K10s_ho
          "b_not_sig_worse_mcnemar_vs_K10s": bool(not (s.p_mcnemar_vs_K10s_holm < .05 and s.wf_acc < SEL.loc[REF, "wf_acc"])),
          "c_pbo_wf_lt_0.5": PBO_WF < .5, "d_cpcv_brier_below_K10s": bool(s.cpcv_mean_term_brier < SEL.loc[REF, "cpcv_mean_term_brier"])}
 replaces = all(gates.values())
-edge = {"replaces_K10": replaces, "DSR_wf_gt_0.95": bool(s.DSR_wf_N35 > .95), "DSR_cpcv_gt_0.95": bool(s.DSR_cpcv_N35 > .95), "pbo_wf_lt_0.5": PBO_WF < .5, "pbo_cpcv_lt_0.5": PBO_CP < .5}
+edge = {"replaces_K10": replaces, "DSR_wf_gt_0.95": bool(s.DSR_wf_N37 > .95), "DSR_cpcv_gt_0.95": bool(s.DSR_cpcv_N37 > .95), "pbo_wf_lt_0.5": PBO_WF < .5, "pbo_cpcv_lt_0.5": PBO_CP < .5}
 V = {"winner_lowest_wf_brier": win, "comparator": REF, "selection_gates": gates, "replaces_K10": replaces, "used_for_forward": win if replaces else "K10",
      "edge_gates": edge, "edge_survives": all(edge.values()), "pbo_wf": PBO_WF, "pbo_cpcv": PBO_CP, "n_trials": N_TRIALS,
      "dsr_sr_variance_from": sorted(list(extra) + POP), "cpcv_active_families": {m: CP[m].attrs.get("active") for m in GPOP},

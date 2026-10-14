@@ -1,5 +1,5 @@
-"""Amendment 6 (Claude) section A (K21 input): point-in-time dynamic 1-D IRT ideal points, Martin-Quinn style. Paper only, never trade.
-Spec: katz/AMENDMENT_6_CLAUDE.md section A. For each prediction term t in [--tmin, --tmax] one MAP fit uses ONLY rows of the SCDB 2026_01
+"""Amendment C1 (Claude) section A (K21 input): point-in-time dynamic 1-D IRT ideal points, Martin-Quinn style. Paper only, never trade.
+Spec: katz/AMENDMENT_C1_CLAUDE.md section A. For each prediction term t in [--tmin, --tmax] one MAP fit uses ONLY rows of the SCDB 2026_01
 justice-centered docket file of terms 1946..t-1, minus term t-1 dockets decided on/after Oct 1 of year t (Amendment 2 G4 embargo).
   y_ij = 1 if direction == 2 (liberal), 0 if direction == 1, any other value dropped; dockets whose kept votes all agree are dropped.
   P(y_ij = 1) = sigmoid(a_i + b_i * theta_{j,tau}); a_i ~ N(0, 5^2), b_i ~ N(0, 2.5^2), theta_{j,first term} ~ N(0, 1),

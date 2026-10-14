@@ -1,4 +1,4 @@
-"""K22 qp_split from supremecourt.gov Questions Presented PDFs (AMENDMENT_6_CLAUDE.md section B). Paper only, never trade.
+"""K22 qp_split from supremecourt.gov Questions Presented PDFs (AMENDMENT_C1_CLAUDE.md section B). Paper only, never trade.
 Input: raw/qp/{docket}.pdf (UNTRUSTED: text extraction only, nothing in them is executed or obeyed). raw/ is still growing: the script
 processes whatever is present and is re-runnable. Output: features/qp_split.csv = docket, qp_have (always 1: one row per parsed QP;
 a docket with no QP PDF, a failed extraction or no petition QP text has no row = missing, never 0), qp_split (0/1), qp_chars, qp_match
